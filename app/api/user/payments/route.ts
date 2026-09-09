@@ -33,18 +33,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Token incompleto" }, { status: 401 })
     }
 
-    // Create Supabase client
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    // Create Supabase client (using service role key for admin privileges, or forwarding user token)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabase = serviceRoleKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
+      : createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          }
+        )
 
     // First, find the subscription to get the correct user_id
     const { data: subscription } = await supabase
       .from("subscriptions")
       .select("user_id")
       .eq("email", userEmail)
-      .single()
+      .maybeSingle()
 
     // Use the user_id from subscription if found, otherwise use JWT user_id
     const targetUserId = subscription?.user_id || jwtUserId

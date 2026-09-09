@@ -1,8 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
-const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-
 export async function GET(request: Request) {
   try {
     const authHeader = request.headers.get("authorization")
@@ -20,6 +18,22 @@ export async function GET(request: Request) {
     if (!userEmail && !userId) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 })
     }
+
+    // Create client using service role key if available, or forwarding user token
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabaseAdmin = serviceRoleKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
+      : createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          }
+        )
 
     // Try to find subscription by user_id first, then by email
     let subscription = null

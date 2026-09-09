@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { v4 as uuidv4 } from "uuid"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get("authorization")
@@ -16,8 +14,24 @@ export async function POST(request: Request) {
     const userId = payload.sub
     const userEmail = payload.email
 
+    // Create client using service role key if available, or forwarding user token
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabase = serviceRoleKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
+      : createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          }
+        )
+
     // Verificar suscripción del usuario
-    const { data: subscription } = await supabase.from("subscriptions").select("*").eq("user_id", userId).single()
+    const { data: subscription } = await supabase.from("subscriptions").select("*").eq("user_id", userId).maybeSingle()
 
     const allowedTiers = ["business", "annual"]
     if (!subscription || !allowedTiers.includes(subscription.tier)) {

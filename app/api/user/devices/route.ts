@@ -1,8 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 
-const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-
 export async function GET(request: Request) {
   try {
     const authHeader = request.headers.get("authorization")
@@ -18,12 +16,28 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 })
     }
 
-    // Get user ID from auth.users
+    // Create client using service role key if available, or forwarding user token
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabaseAdmin = serviceRoleKey
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
+      : createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          {
+            global: {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          }
+        )
+
+    // Get user ID from subscriptions
     const { data: authUser } = await supabaseAdmin
       .from("subscriptions")
       .select("user_id")
       .eq("email", userEmail)
-      .single()
+      .maybeSingle()
 
     if (!authUser) {
       return NextResponse.json({ devices: [] })

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -39,46 +39,46 @@ export function FAQ() {
   }
 
   return (
-    <section id="faq" className="py-20 md:py-28 relative">
+    <section id="faq" className="py-14 sm:py-20 md:py-28 relative">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 bg-primary/10 text-primary font-semibold">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+          <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 bg-primary/10 text-primary font-semibold text-xs">
             Resolvemos tus Dudas
           </Badge>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground text-balance">
             Preguntas Frecuentes
           </h2>
-          <p className="mt-4 text-muted-foreground text-base sm:text-lg">
+          <p className="mt-3 sm:mt-4 text-muted-foreground text-sm sm:text-lg text-balance">
             Todo lo que necesitas saber antes de implementar PagoPing en tu punto de venta.
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index
             return (
               <div
                 key={faq.q}
-                className="rounded-2xl border border-border/70 bg-card overflow-hidden transition-all duration-200 hover:border-primary/40"
+                className="rounded-xl sm:rounded-2xl border border-border/70 bg-card overflow-hidden transition-all duration-200 hover:border-primary/40"
               >
                 <button
                   type="button"
                   onClick={() => toggle(index)}
-                  className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 font-bold text-foreground sm:text-lg"
+                  className="w-full text-left p-3.5 sm:p-6 flex items-center justify-between gap-2.5 sm:gap-4 font-bold text-foreground text-sm sm:text-lg"
                 >
-                  <span className="flex items-center gap-3">
-                    <HelpCircle className="h-5 w-5 text-primary shrink-0" />
-                    {faq.q}
+                  <span className="flex items-center gap-2.5 sm:gap-3">
+                    <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
+                    <span>{faq.q}</span>
                   </span>
                   <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground transition-transform duration-200 shrink-0 ${
+                    className={`h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground transition-transform duration-200 shrink-0 ${
                       isOpen ? "rotate-180 text-primary" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-6 pt-0 sm:px-6 sm:pb-6 text-sm sm:text-base text-muted-foreground leading-relaxed border-t border-border/30 mt-1">
-                    <p className="pt-3">{faq.a}</p>
+                  <div className="px-3.5 pb-4 pt-0 sm:px-6 sm:pb-6 text-xs sm:text-base text-muted-foreground leading-relaxed border-t border-border/30 mt-1">
+                    <p className="pt-2.5 sm:pt-3">{faq.a}</p>
                   </div>
                 )}
               </div>

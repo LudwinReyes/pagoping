@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useRef } from "react"
 import Link from "next/link"
@@ -121,7 +121,7 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32"
+      className="relative overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20 md:pt-20 md:pb-32"
     >
       {/* Dynamic ambient lights / mesh glow */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -131,14 +131,14 @@ export function Hero() {
       </div>
 
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           {/* Badge */}
-          <div ref={heroBadgeRef} className="inline-block">
+          <div ref={heroBadgeRef} className="inline-block max-w-full">
             <Badge
               variant="outline"
-              className="px-4 py-1.5 rounded-full border-primary/30 bg-primary/10 text-primary font-semibold text-xs md:text-sm tracking-wide shadow-sm hover:bg-primary/15 transition-colors gap-2"
+              className="px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border-primary/30 bg-primary/10 text-primary font-semibold text-xs md:text-sm tracking-wide shadow-sm hover:bg-primary/15 transition-colors gap-1.5 sm:gap-2 flex-wrap justify-center text-center"
             >
-              <Sparkles className="h-3.5 w-3.5 fill-primary text-primary" />
+              <Sparkles className="h-3.5 w-3.5 fill-primary text-primary shrink-0" />
               <span>La solución #1 contra vouchers falsos en Perú</span>
               <span className="hidden sm:inline-block text-muted-foreground">• Compatible con Yape</span>
             </Badge>
@@ -147,7 +147,7 @@ export function Hero() {
           {/* Heading */}
           <h1
             ref={headingRef}
-            className="mt-6 text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.1] text-foreground"
+            className="mt-5 sm:mt-6 text-3xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.15] sm:leading-[1.1] text-foreground text-balance"
           >
             Tu negocio canta cada pago{" "}
             <span className="bg-gradient-to-r from-primary via-purple-600 to-indigo-600 bg-clip-text text-transparent">
@@ -158,7 +158,7 @@ export function Hero() {
           {/* Description */}
           <p
             ref={paragraphRef}
-            className="mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-pretty"
+            className="mt-4 sm:mt-6 text-sm sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-balance"
           >
             PagoPing escucha las notificaciones de <strong>Yape</strong> en tu celular, las valida contra estafas y anuncia en voz alta cada pago para tus cajeros y empleados.
           </p>
@@ -166,12 +166,12 @@ export function Hero() {
           {/* Call to action buttons */}
           <div
             ref={buttonsRef}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full"
           >
             <Button
               size="lg"
               asChild
-              className="w-full sm:w-auto h-12 px-7 text-base font-semibold bg-gradient-to-r from-primary via-purple-600 to-indigo-600 hover:from-primary/95 hover:to-indigo-500 text-white shadow-xl shadow-primary/25 rounded-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/40"
+              className="w-full sm:w-auto h-12 px-7 text-sm sm:text-base font-semibold bg-gradient-to-r from-primary via-purple-600 to-indigo-600 hover:from-primary/95 hover:to-indigo-500 text-white shadow-xl shadow-primary/25 rounded-xl transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/40"
             >
               <Link href="/auth/sign-up">
                 Comenzar Gratis Ahora
@@ -183,7 +183,7 @@ export function Hero() {
               size="lg"
               variant="outline"
               asChild
-              className="w-full sm:w-auto h-12 px-6 text-base font-medium rounded-xl border-border/80 hover:bg-muted/70 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
+              className="w-full sm:w-auto h-12 px-6 text-sm sm:text-base font-medium rounded-xl border-border/80 hover:bg-muted/70 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
             >
               <Link href="/app-release.apk" target="_blank" download>
                 <Download className="mr-2 h-5 w-5 text-primary" />
@@ -195,62 +195,62 @@ export function Hero() {
           {/* Trust badges */}
           <div
             ref={trustRef}
-            className="mt-8 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-xs sm:text-sm text-muted-foreground"
+            className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-y-2 gap-x-4 sm:gap-x-6 text-xs sm:text-sm text-muted-foreground"
           >
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
               <span>Instalación en 2 minutos</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
               <span>Sin tarjeta de crédito</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
               <span>100% Seguro y Privado</span>
             </div>
           </div>
         </div>
 
         {/* Hero Interactive Visual Showcase */}
-        <div ref={phoneMockupRef} className="relative mx-auto max-w-4xl mt-6">
+        <div ref={phoneMockupRef} className="relative mx-auto max-w-4xl mt-4 sm:mt-6">
           {/* Glass Card Container */}
-          <div className="relative rounded-3xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-4 sm:p-8 backdrop-blur-2xl shadow-2xl shadow-primary/10">
+          <div className="relative rounded-2xl sm:rounded-3xl border border-border/60 bg-gradient-to-b from-card/90 to-card/40 p-3.5 sm:p-8 backdrop-blur-2xl shadow-2xl shadow-primary/10">
             {/* Top Bar of Dashboard Simulation */}
-            <div className="flex items-center justify-between pb-6 border-b border-border/40">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-red-400/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-400/80" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-4 sm:pb-6 border-b border-border/40">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="flex gap-1.5 shrink-0">
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-400/80" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-400/80" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-400/80" />
                 </div>
-                <span className="text-xs font-semibold text-muted-foreground">
+                <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground truncate">
                   pagoping.app / panel-en-vivo
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-medium text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />
                   3 Dispositivos Sincronizados
                 </span>
               </div>
             </div>
 
             {/* Grid inside mockup: Phone preview & Dashboard table */}
-            <div className="grid lg:grid-cols-12 gap-6 mt-6 items-center">
+            <div className="grid lg:grid-cols-12 gap-6 mt-4 sm:mt-6 items-center">
               {/* Phone Mockup Screen */}
               <div className="lg:col-span-5 flex justify-center">
-                <div className="relative w-64 sm:w-72 rounded-[2.5rem] p-3.5 bg-neutral-900 border-4 border-neutral-800 shadow-2xl ring-1 ring-white/10">
+                <div className="relative w-full max-w-[260px] sm:w-72 rounded-[2rem] sm:rounded-[2.5rem] p-3 sm:p-3.5 bg-neutral-900 border-4 border-neutral-800 shadow-2xl ring-1 ring-white/10">
                   {/* Speaker notch */}
-                  <div className="absolute top-5 left-1/2 -translate-x-1/2 w-20 h-4 bg-neutral-800 rounded-full flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-neutral-950" />
+                  <div className="absolute top-4 sm:top-5 left-1/2 -translate-x-1/2 w-16 sm:w-20 h-3.5 sm:h-4 bg-neutral-800 rounded-full flex items-center justify-center">
+                    <div className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-neutral-950" />
                   </div>
 
                   {/* Mobile Screen Content */}
-                  <div className="rounded-[2rem] overflow-hidden bg-gradient-to-b from-purple-950/90 via-neutral-950 to-neutral-900 text-white p-4 pt-10 min-h-[380px] flex flex-col justify-between">
+                  <div className="rounded-[1.6rem] sm:rounded-[2rem] overflow-hidden bg-gradient-to-b from-purple-950/90 via-neutral-950 to-neutral-900 text-white p-3 sm:p-4 pt-8 sm:pt-10 min-h-[350px] sm:min-h-[380px] flex flex-col justify-between">
                     <div>
-                      <div className="text-center mb-4">
-                        <span className="text-[11px] font-medium text-purple-300/80 tracking-wide uppercase">
+                      <div className="text-center mb-3 sm:mb-4">
+                        <span className="text-[10px] sm:text-[11px] font-medium text-purple-300/80 tracking-wide uppercase">
                           PagoPing • Listener Activo
                         </span>
                         <div className="flex items-center justify-center gap-1 mt-1 text-xs text-emerald-400 font-semibold">
@@ -260,7 +260,7 @@ export function Hero() {
                       </div>
 
                       {/* Incoming simulated Yape notification banner */}
-                      <div className="rounded-2xl bg-neutral-800/90 border border-purple-500/30 p-3 shadow-lg shadow-purple-900/30 transition-all hover:scale-[1.02]">
+                      <div className="rounded-2xl bg-neutral-800/90 border border-purple-500/30 p-2.5 sm:p-3 shadow-lg shadow-purple-900/30 transition-all hover:scale-[1.02]">
                         <div className="flex items-center justify-between mb-1.5">
                           <div className="flex items-center gap-1.5">
                             <div className="w-5 h-5 rounded-md bg-[#742299] flex items-center justify-center font-bold text-[10px] text-white">
@@ -274,26 +274,26 @@ export function Hero() {
                           <strong>Carlos Mendoza</strong> te envió un pago de:
                         </p>
                         <div className="mt-1 flex items-baseline justify-between">
-                          <span className="text-lg font-black text-emerald-400">S/ 120.00</span>
+                          <span className="text-base sm:text-lg font-black text-emerald-400">S/ 120.00</span>
                           <span className="text-[10px] text-neutral-400 font-mono">OP: #482910</span>
                         </div>
                       </div>
 
                       {/* TTS Soundwave Animation */}
-                      <div className="mt-4 rounded-xl bg-purple-900/30 border border-purple-500/20 p-2.5 flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/20 text-primary">
-                          <Volume2 className="h-4 w-4 animate-bounce text-purple-300" />
+                      <div className="mt-3 sm:mt-4 rounded-xl bg-purple-900/30 border border-purple-500/20 p-2 sm:p-2.5 flex items-center gap-2.5 sm:gap-3">
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/20 text-primary shrink-0">
+                          <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-bounce text-purple-300" />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-[10px] text-purple-200 font-medium">Voz en parlante:</p>
-                          <p className="text-[11px] text-white font-bold truncate">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] sm:text-[10px] text-purple-200 font-medium">Voz en parlante:</p>
+                          <p className="text-[10px] sm:text-[11px] text-white font-bold truncate">
                             ¡Pago de 120 soles recibido!
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-center pt-3 border-t border-white/10">
+                    <div className="text-center pt-2.5 sm:pt-3 border-t border-white/10">
                       <p className="text-[10px] text-neutral-400">
                         Válido • Sin tocar el celular
                       </p>
@@ -303,72 +303,72 @@ export function Hero() {
               </div>
 
               {/* Real-time Dashboard Snapshot */}
-              <div className="lg:col-span-7 space-y-4">
+              <div className="lg:col-span-7 space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-base sm:text-lg flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    Registro de Ventas en Vivo
+                  <h3 className="font-bold text-sm sm:text-lg flex items-center gap-1.5 sm:gap-2">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
+                    <span>Registro de Ventas en Vivo</span>
                   </h3>
-                  <Badge variant="secondary" className="font-mono text-xs">
+                  <Badge variant="secondary" className="font-mono text-[11px] sm:text-xs shrink-0">
                     Hoy: S/ 1,480.00
                   </Badge>
                 </div>
 
                 {/* Simulated list of payments */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 transition-all">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+                <div className="space-y-2 sm:space-y-2.5">
+                  <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 transition-all gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-[11px] sm:text-xs shrink-0">
                         CM
                       </div>
-                      <div>
-                        <p className="font-semibold text-sm leading-tight">Carlos Mendoza</p>
-                        <p className="text-xs text-muted-foreground">Yape • OP #482910 • Celular Cajero 1</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-xs sm:text-sm leading-tight truncate">Carlos Mendoza</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yape • OP #482910 • Celular Cajero 1</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">+ S/ 120.00</p>
-                      <span className="text-[10px] font-medium text-emerald-500 uppercase">Validado</span>
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-emerald-600 dark:text-emerald-400 text-xs sm:text-base">+ S/ 120.00</p>
+                      <span className="text-[9px] sm:text-[10px] font-medium text-emerald-500 uppercase">Validado</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/70 transition-all">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                  <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-card border border-border/70 transition-all gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[11px] sm:text-xs shrink-0">
                         MG
                       </div>
-                      <div>
-                        <p className="font-semibold text-sm leading-tight">María García Ramos</p>
-                        <p className="text-xs text-muted-foreground">Yape • OP #482909 • Celular Barra</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-xs sm:text-sm leading-tight truncate">María García Ramos</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yape • OP #482909 • Celular Barra</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-foreground text-sm sm:text-base">+ S/ 45.50</p>
-                      <span className="text-[10px] text-muted-foreground">Hace 4 min</span>
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-foreground text-xs sm:text-base">+ S/ 45.50</p>
+                      <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap">Hace 4 min</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-border/70 transition-all">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                  <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-card border border-border/70 transition-all gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[11px] sm:text-xs shrink-0">
                         RT
                       </div>
-                      <div>
-                        <p className="font-semibold text-sm leading-tight">Renzo Torres Salazar</p>
-                        <p className="text-xs text-muted-foreground">Yape • OP #482908 • Celular Delivery</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-xs sm:text-sm leading-tight truncate">Renzo Torres Salazar</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yape • OP #482908 • Celular Delivery</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-foreground text-sm sm:text-base">+ S/ 89.00</p>
-                      <span className="text-[10px] text-muted-foreground">Hace 12 min</span>
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-foreground text-xs sm:text-base">+ S/ 89.00</p>
+                      <span className="text-[9px] sm:text-[10px] text-muted-foreground whitespace-nowrap">Hace 12 min</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground">
+                <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                    Hash MD5 anti-duplicados verificado
+                    <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span>Hash MD5 anti-duplicados verificado</span>
                   </span>
                   <Link href="#simulador" className="text-primary font-medium hover:underline flex items-center gap-1">
                     Probar interactivo <ArrowRight className="h-3 w-3" />

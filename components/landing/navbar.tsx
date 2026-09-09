@@ -8,11 +8,13 @@ import { Zap } from "lucide-react"
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full px-4 pt-3 pb-2 transition-all">
+    <header className="sticky top-0 z-50 w-full px-2.5 sm:px-4 pt-2.5 sm:pt-3 pb-2 transition-all">
       <div className="container mx-auto max-w-6xl">
-        <div className="flex h-16 items-center justify-between px-4 sm:px-6 rounded-2xl border border-border/50 bg-background/70 backdrop-blur-xl shadow-lg shadow-primary/5">
+        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-6 rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-lg shadow-primary/5">
           {/* Official PagoPing Logo */}
-          <Logo showBadge size="md" />
+          <div className="shrink-0 scale-90 sm:scale-100 origin-left">
+            <Logo showBadge size="md" />
+          </div>
 
           {/* Navigation links */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
@@ -35,7 +37,7 @@ export function Navbar() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <ThemeToggle />
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex text-sm font-medium">
               <Link href="/auth/login">Iniciar Sesión</Link>
@@ -43,9 +45,12 @@ export function Navbar() {
             <Button
               size="sm"
               asChild
-              className="bg-gradient-to-r from-primary via-purple-600 to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-md shadow-primary/20 border-0 font-medium transition-all duration-300 hover:shadow-primary/30 hover:scale-[1.02]"
+              className="h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm bg-gradient-to-r from-primary via-purple-600 to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-white shadow-md shadow-primary/20 border-0 font-semibold transition-all duration-300 hover:shadow-primary/30 hover:scale-[1.02]"
             >
-              <Link href="/auth/sign-up">Comenzar Gratis</Link>
+              <Link href="/auth/sign-up">
+                <span className="sm:hidden">Comenzar</span>
+                <span className="hidden sm:inline">Comenzar Gratis</span>
+              </Link>
             </Button>
           </div>
         </div>

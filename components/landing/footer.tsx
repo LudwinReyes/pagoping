@@ -6,26 +6,26 @@ import { Smartphone, Shield, Heart } from "lucide-react"
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-card/40 backdrop-blur-md py-12">
+    <footer className="border-t border-border/60 bg-card/40 backdrop-blur-md py-8 sm:py-12">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Col 1: Brand */}
-          <div className="col-span-2 md:col-span-1 space-y-3">
+          <div className="col-span-2 md:col-span-1 space-y-2.5 sm:space-y-3">
             <Logo size="sm" />
             <p className="text-xs text-muted-foreground leading-relaxed">
               Monitoreo, validación y alerta por voz para notificaciones de pagos Yape en comercios y tiendas de Perú.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+            <div className="pt-1 sm:pt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
               <span>🇵🇪 Hecho en Perú</span>
             </div>
           </div>
 
           {/* Col 2: Producto */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2.5 sm:mb-3">
               Producto
             </h4>
-            <ul className="space-y-2 text-xs text-muted-foreground">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs text-muted-foreground">
               <li>
                 <a href="#como-funciona" className="hover:text-primary transition-colors">
                   Cómo funciona
@@ -51,10 +51,10 @@ export function Footer() {
 
           {/* Col 3: Recursos */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2.5 sm:mb-3">
               Recursos
             </h4>
-            <ul className="space-y-2 text-xs text-muted-foreground">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs text-muted-foreground">
               <li>
                 <Link href="/instalacion" className="hover:text-primary transition-colors">
                   Guía de instalación
@@ -80,10 +80,10 @@ export function Footer() {
 
           {/* Col 4: Legal & Acceso */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-2.5 sm:mb-3">
               Acceso
             </h4>
-            <ul className="space-y-2 text-xs text-muted-foreground">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs text-muted-foreground">
               <li>
                 <Link href="/auth/login" className="hover:text-primary transition-colors">
                   Iniciar Sesión
@@ -103,7 +103,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="pt-6 sm:pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-muted-foreground text-center sm:text-left">
           <p>© {new Date().getFullYear()} PagoPing. Todos los derechos reservados.</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">

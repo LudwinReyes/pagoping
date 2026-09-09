@@ -1,4 +1,4 @@
-﻿import { Navbar } from "@/components/landing/navbar"
+import { Navbar } from "@/components/landing/navbar"
 import { Hero } from "@/components/landing/hero"
 import { StatsCounter } from "@/components/landing/stats-counter"
 import { InteractiveSimulator } from "@/components/landing/interactive-simulator"
@@ -12,7 +12,7 @@ import { Footer } from "@/components/landing/footer"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20 selection:text-primary overflow-x-hidden w-full">
       <Navbar />
       <main className="flex-1">
         <Hero />

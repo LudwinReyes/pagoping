@@ -17,8 +17,8 @@
   --secondary-foreground: #212121;
   --muted: #f5f6f8;
   --muted-foreground: #757575;
-  --accent: #2979ff;
-  --accent-foreground: #ffffff;
+  --accent: #f0e6f6;
+  --accent-foreground: #8e44ad;
   --destructive: #e53935;
   --destructive-foreground: #ffffff;
   --border: #e0e0e0;
@@ -60,8 +60,8 @@
   --secondary-foreground: #fafafa;
   --muted: #2d2d2d;
   --muted-foreground: #a0a0a0;
-  --accent: #2979ff;
-  --accent-foreground: #ffffff;
+  --accent: #2c1b3d;
+  --accent-foreground: #e9d5ff;
   --destructive: #cf6679;
   --destructive-foreground: #ffffff;
   --border: #3d3d3d;
@@ -136,5 +136,29 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
 }
+
+/* Safe area insets for standalone PWA and mobile devices */
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+.safe-area-padding {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Better mobile scrolling */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+

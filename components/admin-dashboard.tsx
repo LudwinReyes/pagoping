@@ -35,6 +35,7 @@ import {
 import { format, addDays } from "date-fns"
 import { es } from "date-fns/locale"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Logo } from "@/components/logo"
 
 interface SubscriptionWithDevices extends Subscription {
   deviceCount?: number
@@ -372,103 +373,105 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-12">
       {/* Header with glassmorphism */}
-      <header className="sticky top-0 z-50 border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-purple-700 shadow-lg shadow-purple-200 dark:shadow-purple-900/30">
-              <span className="text-white font-bold text-lg">$</span>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-slate-900 dark:text-white">PagoPing Admin</h1>
-              <p className="text-xs text-slate-500">{adminEmail}</p>
+      <header className="sticky top-0 z-50 border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl safe-top">
+        <div className="container mx-auto flex h-16 items-center justify-between px-3.5 sm:px-4">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <Logo size="sm" asLink={false} />
+            <div className="flex flex-col min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-md border border-purple-500/20 w-fit">
+                Panel Admin
+              </span>
+              <p className="text-[11px] text-slate-500 mt-0.5 truncate hidden sm:block">{adminEmail}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <ThemeToggle />
             <div className="h-6 w-px bg-slate-200 dark:bg-slate-700" />
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2.5 sm:px-3"
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Salir
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Salir</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 md:p-6 space-y-6">
+      <main className="container mx-auto p-3.5 sm:p-5 md:p-6 space-y-5 sm:space-y-6">
         {/* Title Section */}
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard Administrativo</h2>
-          <Badge className="bg-purple-600 text-white border-0">Admin</Badge>
+        <div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Dashboard Administrativo</h1>
+            <Badge className="bg-purple-600 text-white border-0 text-[10px] sm:text-xs">Admin</Badge>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">Monitorea y gestiona las suscripciones de tus clientes en tiempo real.</p>
         </div>
-        <p className="text-slate-500 -mt-4">Monitorea y gestiona las suscripciones de tus clientes en tiempo real.</p>
 
-        {/* Stats Cards - Modern Design */}
-        <div className="grid gap-4 md:grid-cols-5">
+        {/* Stats Cards - Responsive Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* Total Clients */}
           <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-start justify-between">
-                <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30">
-                  <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <div className="p-2 sm:p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                 </div>
-                <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">{totalGrowth}</span>
+                <span className="text-[10px] sm:text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">{totalGrowth}</span>
               </div>
-              <p className="text-sm text-slate-500 mt-4">Total Clientes</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 sm:mt-4">Total Clientes</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
             </CardContent>
           </Card>
 
           {/* Plan Gratis */}
           <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
-            <CardContent className="p-5">
-              <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 w-fit">
-                <Bookmark className="h-5 w-5 text-slate-400" />
+            <CardContent className="p-4 sm:p-5">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 w-fit">
+                <Bookmark className="h-4 w-4 sm:h-5 sm:w-5 text-slate-400" />
               </div>
-              <p className="text-sm text-slate-500 mt-4">Plan Gratis</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.free}</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 sm:mt-4">Plan Gratis</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{stats.free}</p>
             </CardContent>
           </Card>
 
           {/* Plan Básico */}
           <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
-            <CardContent className="p-5">
-              <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 w-fit">
-                <TrendingUp className="h-5 w-5 text-blue-500" />
+            <CardContent className="p-4 sm:p-5">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 w-fit">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               </div>
-              <p className="text-sm text-slate-500 mt-4">Plan Básico</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.basic}</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 sm:mt-4">Plan Básico</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{stats.basic}</p>
             </CardContent>
           </Card>
 
           {/* Plan Negocio */}
           <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
-            <CardContent className="p-5">
+            <CardContent className="p-4 sm:p-5">
               <div className="flex items-start justify-between">
-                <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30">
-                  <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <div className="p-2 sm:p-2.5 rounded-xl bg-purple-50 dark:bg-purple-900/30">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 dark:text-purple-400" />
                 </div>
-                <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">{businessGrowth}</span>
+                <span className="text-[10px] sm:text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">{businessGrowth}</span>
               </div>
-              <p className="text-sm text-slate-500 mt-4">Plan Negocio</p>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.business}</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 sm:mt-4">Plan Negocio</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{stats.business}</p>
             </CardContent>
           </Card>
 
           {/* Vencidos */}
-          <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
-            <CardContent className="p-5">
-              <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-900/30 w-fit">
-                <AlertCircle className="h-5 w-5 text-red-500" />
+          <Card className="border-0 shadow-sm bg-white dark:bg-slate-800 col-span-2 sm:col-span-1 lg:col-span-1">
+            <CardContent className="p-4 sm:p-5">
+              <div className="p-2 sm:p-2.5 rounded-xl bg-red-50 dark:bg-red-900/30 w-fit">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
               </div>
-              <p className="text-sm text-slate-500 mt-4">Vencidos</p>
-              <p className="text-3xl font-bold text-red-500">{stats.expired}</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-3 sm:mt-4">Vencidos</p>
+              <p className="text-2xl sm:text-3xl font-bold text-red-500">{stats.expired}</p>
             </CardContent>
           </Card>
         </div>
@@ -492,9 +495,92 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            {/* Custom Table */}
-            <div className="overflow-x-auto">
+          <CardContent className="p-3.5 sm:p-6">
+            {/* Mobile Cards List for phones */}
+            <div className="block md:hidden space-y-3">
+              {subs.length === 0 ? (
+                <p className="text-center py-8 text-slate-500 text-sm">
+                  {isSearching ? "Buscando..." : "No se encontraron usuarios"}
+                </p>
+              ) : (
+                subs.map((sub: SubscriptionWithDevices) => (
+                  <div
+                    key={sub.user_id}
+                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 shadow-sm space-y-3"
+                  >
+                    {/* Top: Business & Plan */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
+                          <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">
+                            {sub.business_name || sub.display_name || sub.owner_name || "Sin nombre"}
+                          </p>
+                        </div>
+                        <p className="text-xs text-slate-500 truncate mt-0.5">{sub.email}</p>
+                      </div>
+                      <div className="shrink-0 flex items-center gap-1.5">
+                        {getPlanBadge(sub.tier)}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditUser(sub)}
+                          className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl"
+                          aria-label="Gestionar cliente"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Middle Details Grid */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-700/50 text-xs">
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold">Estado</span>
+                        <div className="mt-1">{getStatusBadge(sub)}</div>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold">Teléfono</span>
+                        <div className="mt-1">
+                          {sub.phone_number ? (
+                            <a
+                              href={`https://wa.me/51${sub.phone_number.replace(/\s/g, "")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-emerald-600 font-medium hover:underline"
+                            >
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              {sub.phone_number}
+                            </a>
+                          ) : (
+                            <span className="text-slate-400">-</span>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold">Staff Vinculado</span>
+                        <div className="mt-1">{getStaffDisplay(sub)}</div>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-slate-400 uppercase font-semibold">Vencimiento</span>
+                        <div className="mt-1">
+                          {sub.ends_at ? (
+                            <span className={`font-medium ${new Date(sub.ends_at) < new Date() ? "text-red-500" : "text-slate-600 dark:text-slate-400"}`}>
+                              {format(new Date(sub.ends_at), "dd/MM/yyyy", { locale: es })}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">-</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-100 dark:border-slate-700">
@@ -578,7 +664,7 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
 
       {/* Edit Modal - New Design */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-[32px] p-0 overflow-hidden border-0 shadow-2xl">
+        <DialogContent className="max-w-[92vw] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-3xl p-0 border-0 shadow-2xl">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-xl font-semibold text-slate-900 dark:text-white">Gestionar Suscripción</DialogTitle>
             <p className="text-sm text-slate-500">{selectedUser?.email}</p>

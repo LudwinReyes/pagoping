@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "next-themes"
 import "./globals.css"
 import { AuthProvider } from "@/lib/auth-context"
+import { PWAProvider } from "@/components/pwa-provider"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -13,8 +14,18 @@ export const metadata: Metadata = {
   title: "PagoPing - Monitorea tus pagos Yape en tiempo real",
   description:
     "PagoPing captura automáticamente las notificaciones de Yape en tu celular y las organiza en un dashboard fácil de usar. Perfecto para tiendas, restaurantes y negocios.",
-  keywords: ["yape", "pagos", "notificaciones", "monitoreo", "negocio", "ventas", "perú"],
+  keywords: ["yape", "pagos", "notificaciones", "monitoreo", "negocio", "ventas", "perú", "pwa"],
   generator: "v0.app",
+  applicationName: "PagoPing",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "PagoPing",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: [
       {
@@ -40,10 +51,15 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#121212" },
+  ],
   width: "device-width",
   initialScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
@@ -53,9 +69,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`font-sans antialiased`}>
+      <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="manifest" href="/manifest.webmanifest" />
+      </head>
+      <body className={`font-sans antialiased min-h-screen bg-background text-foreground safe-area-padding`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <PWAProvider>{children}</PWAProvider>
+          </AuthProvider>
         </ThemeProvider>
         <Analytics />
       </body>

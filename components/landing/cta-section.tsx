@@ -45,10 +45,10 @@ export function CTASection() {
                 asChild
                 className="w-full sm:w-auto h-12 sm:h-13 px-6 sm:px-7 text-sm sm:text-base font-medium rounded-xl border-white/30 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all duration-300 hover:scale-[1.02]"
               >
-                <Link href="/app-release.apk" target="_blank" download>
+                <a href="/app-release.apk" target="_blank" download>
                   <Download className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Descargar APK Directo
-                </Link>
+                </a>
               </Button>
             </div>
 

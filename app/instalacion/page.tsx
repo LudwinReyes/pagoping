@@ -81,10 +81,10 @@ export default function InstallationPage() {
                         </p>
                         <div className="mt-4">
                             <Button size="lg" className="w-full sm:w-auto h-11 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold" asChild>
-                                <Link href="/app-release.apk" download>
+                                <a href="/app-release.apk" download>
                                     <Download className="mr-2 h-4 w-4" />
                                     Descargar APK Android
-                                </Link>
+                                </a>
                             </Button>
                         </div>
                     </div>

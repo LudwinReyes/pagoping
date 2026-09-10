@@ -96,10 +96,10 @@ export default function SignUpSuccessPage() {
               variant="outline"
               className="flex-1 h-11 font-semibold rounded-xl border-border/80 hover:bg-muted"
             >
-              <Link href="/app-release.apk" target="_blank" download>
-                <Download className="mr-1.5 h-4 w-4 text-primary" />
-                Descargar APK
-              </Link>
+              <a href="/app-release.apk" target="_blank" download>
+                <Download className="h-4 w-4 mr-2" />
+                Descargar APK Android
+              </a>
             </Button>
           </div>
         </div>

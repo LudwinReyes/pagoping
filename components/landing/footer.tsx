@@ -61,9 +61,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/app-release.apk" target="_blank" download className="hover:text-primary transition-colors">
+                <a href="/app-release.apk" target="_blank" download className="hover:text-primary transition-colors">
                   Descargar APK
-                </Link>
+                </a>
               </li>
               <li>
                 <a href="#faq" className="hover:text-primary transition-colors">

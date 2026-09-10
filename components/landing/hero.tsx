@@ -185,10 +185,10 @@ export function Hero() {
               asChild
               className="w-full sm:w-auto h-12 px-6 text-sm sm:text-base font-medium rounded-xl border-border/80 hover:bg-muted/70 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02]"
             >
-              <Link href="/app-release.apk" target="_blank" download>
+              <a href="/app-release.apk" target="_blank" download>
                 <Download className="mr-2 h-5 w-5 text-primary" />
                 Descargar APK Android
-              </Link>
+              </a>
             </Button>
           </div>
 

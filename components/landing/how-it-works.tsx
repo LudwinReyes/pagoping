@@ -82,10 +82,10 @@ export function HowItWorks() {
                 {index === 0 && (
                   <div className="mt-5 sm:mt-6 pt-4 border-t border-border/40">
                     <Button size="sm" variant="outline" asChild className="w-full text-xs font-semibold h-9">
-                      <Link href="/app-release.apk" target="_blank" download>
+                      <a href="/app-release.apk" target="_blank" download>
                         <Download className="mr-1.5 h-3.5 w-3.5 text-primary" />
                         Descargar APK Android
-                      </Link>
+                      </a>
                     </Button>
                   </div>
                 )}

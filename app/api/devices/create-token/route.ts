@@ -15,9 +15,9 @@ export async function POST(request: Request) {
       .eq("user_id", userId)
       .maybeSingle()
 
-    const allowedTiers = ["business", "annual"]
+    const allowedTiers = ["business", "enterprise", "annual"]
     if (!subscription || !allowedTiers.includes(subscription.tier)) {
-      return NextResponse.json({ error: "Solo disponible para plan Negocio o Anual" }, { status: 403 })
+      return NextResponse.json({ error: "Solo disponible para plan Negocio o Empresa" }, { status: 403 })
     }
 
     // Contar dispositivos actuales

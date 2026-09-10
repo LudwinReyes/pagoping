@@ -43,10 +43,10 @@ export function Pricing() {
     {
       name: "Básico",
       desc: "Para bodegas o tiendas pequeñas con 1 punto de venta.",
-      price: isAnnual ? "S/ 12" : "S/ 15",
+      price: isAnnual ? "S/ 11.25" : "S/ 15",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: false,
-      badge: isAnnual ? "Ahorras 20%" : null,
+      badge: isAnnual ? "Ahorras 25%" : null,
       features: [
         "Validaciones ILIMITADAS",
         "1 dispositivo conectado",
@@ -60,13 +60,13 @@ export function Pricing() {
     {
       name: "Negocio",
       desc: "El más elegido por restaurantes, pollerías y minimarkets.",
-      price: isAnnual ? "S/ 24" : "S/ 30",
+      price: isAnnual ? "S/ 22.50" : "S/ 30",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: true,
       badge: "MÁS POPULAR",
       features: [
         "Validaciones ILIMITADAS",
-        "Hasta 3 dispositivos (Multicaja)",
+        "Hasta 4 dispositivos (Multicaja)",
         "Voz TTS en todos los celulares",
         "Historial completo de ventas",
         "Exportación a Excel / CSV",
@@ -78,7 +78,7 @@ export function Pricing() {
     {
       name: "Empresa",
       desc: "Para cadenas de locales o franquicias con alto volumen.",
-      price: isAnnual ? "S/ 48" : "S/ 60",
+      price: isAnnual ? "S/ 45" : "S/ 60",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: false,
       badge: "ALTO VOLUMEN",

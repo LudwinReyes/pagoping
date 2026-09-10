@@ -1,9 +1,10 @@
-export type PlanTier = "free" | "basic" | "business" | "annual"
+export type PlanTier = "free" | "basic" | "business" | "enterprise" | "annual"
 
 export interface Subscription {
   user_id: string
   email: string
   tier: PlanTier
+  billing_period?: "free" | "monthly" | "annual"
   starts_at: string
   ends_at: string | null
   validations_count: number
@@ -43,6 +44,17 @@ export interface Device {
   is_active?: boolean
 }
 
+export interface Collaborator {
+  id: string
+  owner_id: string
+  auth_user_id: string
+  name: string
+  phone_number: string
+  is_active: boolean
+  created_at?: string
+  updated_at?: string
+}
+
 export const PLAN_CONFIG = {
   free: {
     name: "Gratis",
@@ -64,15 +76,23 @@ export const PLAN_CONFIG = {
     name: "Negocio",
     color: "bg-amber-500/20 text-amber-600",
     maxValidations: 99999999,
-    maxDevices: 3,
+    maxDevices: 4,
+    canExport: true,
+    duration: 30,
+  },
+  enterprise: {
+    name: "Empresa",
+    color: "bg-violet-500/20 text-violet-600",
+    maxValidations: 99999999,
+    maxDevices: 8,
     canExport: true,
     duration: 30,
   },
   annual: {
-    name: "Anual",
+    name: "Negocio Anual (legado)",
     color: "bg-emerald-500/20 text-emerald-600",
     maxValidations: 99999999,
-    maxDevices: 3,
+    maxDevices: 4,
     canExport: true,
     duration: 365,
   },

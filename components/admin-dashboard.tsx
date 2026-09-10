@@ -175,7 +175,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
     total: subs.length,
     free: subs.filter((s) => s.tier === "free").length,
     basic: subs.filter((s) => s.tier === "basic").length,
-    business: subs.filter((s) => s.tier === "business" || s.tier === "annual").length,
+    business: subs.filter((s) => s.tier === "business" || s.tier === "enterprise" || s.tier === "annual").length,
     expired: subs.filter((s) => s.ends_at && new Date(s.ends_at) < new Date()).length,
   }
 
@@ -185,8 +185,8 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
 
   const handleEditUser = (sub: SubscriptionWithDevices) => {
     setSelectedUser(sub)
-    setNewPlan(sub.tier)
-    setIsAnnualCycle(sub.tier === "annual")
+    setNewPlan(sub.tier === "annual" ? "business" : sub.tier)
+    setIsAnnualCycle(sub.tier === "annual" || sub.billing_period === "annual")
     if (sub.ends_at) {
       setCustomEndDate(format(new Date(sub.ends_at), "yyyy-MM-dd"))
     } else {
@@ -232,8 +232,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
     setIsLoading(true)
     const token = localStorage.getItem("auth_token")
 
-    // Determine actual tier for annual
-    const actualTier = isAnnualCycle && newPlan !== "free" ? "annual" : newPlan
+    const actualTier = newPlan === "annual" ? "business" : newPlan
 
     const response = await fetch("/api/admin/update-plan", {
       method: "POST",
@@ -244,6 +243,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
       body: JSON.stringify({
         userId: selectedUser.user_id,
         tier: actualTier,
+        billingPeriod: actualTier === "free" ? "free" : isAnnualCycle ? "annual" : "monthly",
         endDate: actualTier === "free" ? null : customEndDate,
         maxValidations: PLAN_CONFIG[actualTier].maxValidations,
         maxDevices: PLAN_CONFIG[actualTier].maxDevices,
@@ -286,7 +286,8 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
       free: { bg: "bg-slate-100 dark:bg-slate-800", text: "text-slate-500", label: "Gratis" },
       basic: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400", label: "Básico" },
       business: { bg: "bg-purple-50 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400", label: "Negocio" },
-      annual: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-400", label: "Anual" },
+      enterprise: { bg: "bg-violet-50 dark:bg-violet-900/30", text: "text-violet-600 dark:text-violet-400", label: "Empresa" },
+      annual: { bg: "bg-emerald-50 dark:bg-emerald-900/30", text: "text-emerald-600 dark:text-emerald-400", label: "Negocio anual" },
     }
     const c = config[tier]
     return <Badge className={`${c.bg} ${c.text} border-0 font-medium`}>{c.label}</Badge>
@@ -364,9 +365,9 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
       return "Plan Gratis (Indefinido). Sin dispositivos staff ni exportación."
     }
 
-    const planName = { basic: "Básico", business: "Negocio", annual: "Anual", free: "Gratis" }[newPlan] || newPlan
+    const planName = { basic: "Básico", business: "Negocio", enterprise: "Empresa", annual: "Negocio", free: "Gratis" }[newPlan] || newPlan
     const cycle = isAnnualCycle ? "Anual" : "Mensual"
-    const devices = PLAN_CONFIG[isAnnualCycle ? "annual" : newPlan]?.maxDevices || 1
+    const devices = PLAN_CONFIG[newPlan]?.maxDevices || 1
     const endDateFormatted = customEndDate ? format(new Date(customEndDate), "d 'de' MMMM 'de' yyyy", { locale: es }) : ""
 
     return `Plan ${planName} (${cycle}). Se habilitarán ${devices} dispositivos staff hasta el ${endDateFormatted}.`
@@ -674,9 +675,9 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
             {/* Plan Selection - Grid Buttons */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Plan de Suscripción</label>
-              <div className="grid grid-cols-3 gap-2">
-                {(["free", "basic", "business"] as const).map((plan) => {
-                  const isSelected = newPlan === plan || (isAnnualCycle && plan === "business" && newPlan === "business")
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(["free", "basic", "business", "enterprise"] as const).map((plan) => {
+                  const isSelected = newPlan === plan
                   return (
                     <button
                       key={plan}
@@ -687,7 +688,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
                           : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300"
                         }`}
                     >
-                      {{ free: "Gratis", basic: "Básico", business: "Negocio" }[plan]}
+                      {{ free: "Gratis", basic: "Básico", business: "Negocio", enterprise: "Empresa" }[plan]}
                     </button>
                   )
                 })}

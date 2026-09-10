@@ -4,8 +4,9 @@ import { authenticateRequest, createServiceRoleClient, isAdmin } from "@/lib/api
 const PLAN_LIMITS = {
   free: { max_validations: 5, max_devices: 1, can_export: false },
   basic: { max_validations: 99_999_999, max_devices: 1, can_export: false },
-  business: { max_validations: 99_999_999, max_devices: 3, can_export: true },
-  annual: { max_validations: 99_999_999, max_devices: 3, can_export: true },
+  business: { max_validations: 99_999_999, max_devices: 4, can_export: true },
+  enterprise: { max_validations: 99_999_999, max_devices: 8, can_export: true },
+  annual: { max_validations: 99_999_999, max_devices: 4, can_export: true },
 } as const
 
 export async function POST(request: NextRequest) {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     // Get request body
     const body = await request.json()
-    const { userId, tier, endDate } = body
+    const { userId, tier, endDate, billingPeriod } = body
 
     if (!userId || !tier || !(tier in PLAN_LIMITS)) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 })
@@ -32,12 +33,14 @@ export async function POST(request: NextRequest) {
       max_validations: number
       max_devices: number
       can_export: boolean
+      billing_period: "free" | "monthly" | "annual"
     } = {
       tier: selectedTier,
       starts_at: new Date().toISOString(),
       max_validations: limits.max_validations,
       max_devices: limits.max_devices,
       can_export: limits.can_export,
+      billing_period: selectedTier === "free" ? "free" : billingPeriod === "annual" ? "annual" : "monthly",
     }
 
     if (selectedTier !== "free" && endDate) {

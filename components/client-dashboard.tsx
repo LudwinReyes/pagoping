@@ -36,10 +36,10 @@ import {
 } from "lucide-react"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
-import QRCode from "qrcode"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Logo } from "@/components/logo"
 import { PWAInstallBanner } from "@/components/pwa-install-banner"
+import { CollaboratorsManager } from "@/components/collaborators-manager"
 
 interface ClientDashboardProps {
   subscription: Subscription | null
@@ -62,9 +62,6 @@ export function ClientDashboard({
 }: ClientDashboardProps) {
   const [ttsEnabled, setTtsEnabled] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
-  const [isGeneratingQR, setIsGeneratingQR] = useState(false)
-  const [qrModalOpen, setQrModalOpen] = useState(false)
   const [devicesModalOpen, setDevicesModalOpen] = useState(false)
   const [removedDeviceIds, setRemovedDeviceIds] = useState<string[]>([])
   const [isDeletingDevice, setIsDeletingDevice] = useState<string | null>(null)
@@ -78,7 +75,7 @@ export function ClientDashboard({
 
   const tier = subscription?.tier || "free"
   const planConfig = PLAN_CONFIG[tier]
-  const isBusiness = tier === "business" || tier === "annual"
+  const isBusiness = tier === "business" || tier === "enterprise" || tier === "annual"
 
   const todayTotal = todayPayments.reduce((sum, p) => sum + Number(p.amount), 0)
 
@@ -181,44 +178,6 @@ export function ClientDashboard({
 
   const handleWhatsApp = () => {
     window.open("https://wa.me/51928659361?text=Hola,%20necesito%20ayuda%20con%20PagoPing", "_blank")
-  }
-
-  const handleGenerateQR = async () => {
-    setIsGeneratingQR(true)
-    try {
-      const token = localStorage.getItem("auth_token")
-      const response = await fetch("/api/devices/create-token", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        alert(error.error || "Error generando QR")
-        return
-      }
-
-      const data = await response.json()
-      // Use URI format that mobile app expects: pagoping://pair?token=...
-      const qrDataString = `pagoping://pair?token=${data.pairingToken}`
-      const qrUrl = await QRCode.toDataURL(qrDataString, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: "#8E44AD",
-          light: "#FFFFFF",
-        },
-      })
-      setQrCodeUrl(qrUrl)
-      setQrModalOpen(true)
-    } catch (error) {
-      console.error("Error generating QR:", error)
-      alert("Error generando código QR")
-    } finally {
-      setIsGeneratingQR(false)
-    }
   }
 
   const handleDeleteDevice = async (deviceId: string) => {
@@ -489,56 +448,11 @@ export function ClientDashboard({
             </DialogContent>
           </Dialog>
 
-          {/* Vincular Staff */}
           {isBusiness && (
-            <Dialog open={qrModalOpen} onOpenChange={(open) => { setQrModalOpen(open); if (open) setSelectedAction('staff'); else setSelectedAction(null); }}>
-              <DialogTrigger asChild>
-                <button
-                  onClick={handleGenerateQR}
-                  disabled={isGeneratingQR}
-                  className={`relative p-3.5 sm:p-5 md:p-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center gap-2 sm:gap-3 group col-span-2 sm:col-span-1
-                    ${selectedAction === 'staff' || qrModalOpen
-                      ? 'border-purple-500 bg-purple-500 shadow-lg shadow-purple-200 dark:shadow-purple-900/30 scale-[1.02]'
-                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-purple-300 hover:shadow-md'}`}
-                >
-                  <div className={`p-2.5 sm:p-3 rounded-xl transition-all duration-300 ${selectedAction === 'staff' || qrModalOpen ? 'bg-white/20' : 'bg-purple-100 dark:bg-purple-900/50'}`}>
-                    {isGeneratingQR ? (
-                      <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-spin" />
-                    ) : (
-                      <Users className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedAction === 'staff' || qrModalOpen ? 'text-white' : 'text-purple-600 dark:text-purple-400'}`} />
-                    )}
-                  </div>
-                  <span className={`text-xs sm:text-sm font-medium text-center transition-colors ${selectedAction === 'staff' || qrModalOpen ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>Vincular Staff</span>
-                  <span className={`text-[11px] sm:text-xs text-center transition-colors ${selectedAction === 'staff' || qrModalOpen ? 'text-purple-200' : 'text-purple-600 dark:text-purple-400'}`}>
-                    {staffDevices.length} / {(subscription?.max_devices || 1) - 1} Miembros
-                  </span>
-                </button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[92vw] sm:max-w-md max-h-[85vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
-                <DialogHeader>
-                  <DialogTitle>Vincular Empleado</DialogTitle>
-                  <DialogDescription className="text-xs sm:text-sm">
-                    Escanea este código con la App PagoPing en el celular de tu empleado
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col items-center py-4 sm:py-6">
-                  {qrCodeUrl ? (
-                    <>
-                      <div className="p-3 sm:p-4 bg-white rounded-2xl border-2 border-primary shadow-sm">
-                        <img src={qrCodeUrl || "/placeholder.svg"} alt="QR Code" className="w-48 sm:w-60 h-48 sm:h-60 object-contain mx-auto" />
-                      </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-4 text-center max-w-xs">
-                        El empleado podrá ver los pagos en tiempo real pero NO podrá insertar pagos falsos.
-                      </p>
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-48 sm:h-60">
-                      <Loader2 className="h-8 w-8 text-primary animate-spin" />
-                    </div>
-                  )}
-                </div>
-              </DialogContent>
-            </Dialog>
+            <CollaboratorsManager
+              maxCollaborators={Math.max((subscription?.max_devices || 1) - 1, 0)}
+              initialCount={staffDevices.length}
+            />
           )}
         </div>
 
@@ -610,11 +524,11 @@ export function ClientDashboard({
           </button>
           {isBusiness && (
             <button
-              onClick={() => { handleGenerateQR(); setQrModalOpen(true); }}
+              onClick={() => document.getElementById("collaborators-manager-trigger")?.click()}
               className="flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-xl text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
             >
               <Users className="h-5 w-5" />
-              <span className="text-[10px] font-semibold">Staff</span>
+              <span className="text-[10px] font-semibold">Colaboradores</span>
             </button>
           )}
           <button

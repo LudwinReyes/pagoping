@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from("subscriptions")
-      .select("user_id,email,tier,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
+      .select("user_id,email,tier,billing_period,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
       .order("created_at", { ascending: false })
       .limit(100)
 

@@ -134,6 +134,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
   html,
   body {
     @apply bg-background text-foreground;

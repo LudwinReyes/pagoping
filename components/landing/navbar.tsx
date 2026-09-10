@@ -20,6 +20,17 @@ import {
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  // Detectar scroll para aumentar el contraste y sombra al navegar
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 15)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   // Cerrar menú con la tecla Escape
   useEffect(() => {
@@ -31,9 +42,15 @@ export function Navbar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 w-full px-2.5 sm:px-4 pt-2.5 sm:pt-3 pb-2 transition-all">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full px-2.5 sm:px-4 pt-2.5 sm:pt-3 pb-2 transition-all duration-300">
       <div className="container mx-auto max-w-6xl relative">
-        <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-6 rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-lg shadow-primary/5">
+        <div
+          className={`flex h-14 sm:h-16 items-center justify-between px-3 sm:px-6 rounded-2xl border transition-all duration-300 ${
+            scrolled
+              ? "border-border/80 bg-background/95 backdrop-blur-2xl shadow-xl shadow-primary/10"
+              : "border-border/50 bg-background/85 backdrop-blur-xl shadow-lg shadow-primary/5"
+          }`}
+        >
           {/* Official PagoPing Logo */}
           <div className="shrink-0 scale-90 sm:scale-100 origin-left">
             <Logo showBadge size="md" />
@@ -103,7 +120,7 @@ export function Navbar() {
 
         {/* Mobile Dropdown Navigation Menu */}
         {isOpen && (
-          <div className="relative z-50 md:hidden mt-2 p-3.5 rounded-2xl border border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl shadow-primary/10 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="relative z-50 md:hidden mt-2 p-3.5 rounded-2xl border border-border/80 bg-background/95 backdrop-blur-2xl shadow-2xl shadow-primary/10 max-h-[calc(100vh-5.5rem)] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="space-y-1">
               <a
                 href="#simulador"

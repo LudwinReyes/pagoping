@@ -12,9 +12,9 @@ import { Footer } from "@/components/landing/footer"
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20 selection:text-primary overflow-x-hidden w-full">
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary/20 selection:text-primary overflow-x-clip w-full">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pt-20 sm:pt-24">
         <Hero />
         <StatsCounter />
         <InteractiveSimulator />

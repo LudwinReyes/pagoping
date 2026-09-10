@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { ClientDashboard } from "@/components/client-dashboard"
@@ -22,6 +22,24 @@ export default function DashboardPage() {
   })
   const [isLoadingData, setIsLoadingData] = useState(true)
 
+  const loadDashboardData = useCallback(async () => {
+    const token = localStorage.getItem("auth_token")
+    const response = await fetch("/api/user/dashboard", {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+    })
+
+    if (!response.ok) throw new Error("No se pudo cargar el panel")
+
+    const dashboardData = await response.json()
+    setData({
+      subscription: dashboardData.subscription,
+      todayPayments: dashboardData.todayPayments || [],
+      recentPayments: dashboardData.recentPayments || [],
+      devices: dashboardData.devices || [],
+    })
+  }, [])
+
   useEffect(() => {
     if (!loading) {
       if (!session) {
@@ -36,74 +54,39 @@ export default function DashboardPage() {
         return
       }
 
-      const loadData = async () => {
-        const token = localStorage.getItem("auth_token")
-
-        const subscriptionResponse = await fetch("/api/user/subscription", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        const subscriptionData = subscriptionResponse.ok ? await subscriptionResponse.json() : { subscription: null }
-
-        console.log("[v0] Dashboard - Subscription loaded:", subscriptionData.subscription)
-
-        const paymentsResponse = await fetch("/api/user/payments", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        const paymentsData = paymentsResponse.ok
-          ? await paymentsResponse.json()
-          : { todayPayments: [], recentPayments: [] }
-
-        const devicesResponse = await fetch("/api/user/devices", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        const devicesData = devicesResponse.ok ? await devicesResponse.json() : { devices: [] }
-
-        setData({
-          subscription: subscriptionData.subscription,
-          todayPayments: paymentsData.todayPayments || [],
-          recentPayments: paymentsData.recentPayments || [],
-          devices: devicesData.devices || [],
-        })
-        setIsLoadingData(false)
-      }
-
-      loadData()
+      const timer = window.setTimeout(() => {
+        loadDashboardData()
+          .catch((error) => console.error("Error cargando el panel:", error))
+          .finally(() => setIsLoadingData(false))
+      }, 0)
 
       // No more polling - Realtime subscription in ClientDashboard handles updates
+      return () => window.clearTimeout(timer)
     }
-  }, [session, loading, router])
+  }, [session, loading, router, loadDashboardData])
 
-  // Function to reload data (called by Realtime subscription)
-  const handleRefresh = async () => {
-    console.log('[v0] Dashboard - Realtime triggered refresh')
-    const token = localStorage.getItem("auth_token")
+  const handlePaymentInserted = useCallback((payment: Payment) => {
+    const dayKey = (value: string | Date) =>
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone: "America/Lima",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(value))
 
-    const paymentsResponse = await fetch("/api/user/payments", {
-      headers: { Authorization: `Bearer ${token}` },
+    setData((previous) => {
+      const recentPayments = [
+        payment,
+        ...previous.recentPayments.filter((item) => item.id !== payment.id),
+      ].slice(0, 30)
+      const isToday = dayKey(payment.created_at) === dayKey(new Date())
+      const todayPayments = isToday
+        ? [payment, ...previous.todayPayments.filter((item) => item.id !== payment.id)]
+        : previous.todayPayments
+
+      return { ...previous, recentPayments, todayPayments }
     })
-    const paymentsData = paymentsResponse.ok
-      ? await paymentsResponse.json()
-      : { todayPayments: [], recentPayments: [] }
-
-    const devicesResponse = await fetch("/api/user/devices", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    const devicesData = devicesResponse.ok ? await devicesResponse.json() : { devices: [] }
-
-    setData(prev => ({
-      ...prev,
-      todayPayments: paymentsData.todayPayments || [],
-      recentPayments: paymentsData.recentPayments || [],
-      devices: devicesData.devices || [],
-    }))
-  }
+  }, [])
 
   if (loading || isLoadingData) {
     return (
@@ -123,7 +106,8 @@ export default function DashboardPage() {
       recentPayments={data.recentPayments}
       devices={data.devices}
       userEmail={session?.user?.email || ""}
-      onRefresh={handleRefresh}
+      onRefresh={loadDashboardData}
+      onPaymentInserted={handlePaymentInserted}
     />
   )
 }

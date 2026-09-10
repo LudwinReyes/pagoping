@@ -1,82 +1,18 @@
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
+import { authenticateRequest } from "@/lib/api-auth"
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get("authorization")
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-    }
+    const auth = await authenticateRequest(request)
+    if (!auth) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
 
-    const token = authHeader.replace("Bearer ", "")
-    const payload = JSON.parse(atob(token.split(".")[1]))
-    const userEmail = payload.email
-    const userId = payload.sub
+    const { data: subscription, error } = await auth.supabase
+      .from("subscriptions")
+      .select("user_id,email,tier,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
+      .eq("user_id", auth.user.id)
+      .maybeSingle()
 
-    console.log("[v0] API - Subscription request for email:", userEmail, "userId:", userId)
-
-    if (!userEmail && !userId) {
-      return NextResponse.json({ error: "Token inválido" }, { status: 401 })
-    }
-
-    // Create client using service role key if available, or forwarding user token
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    const supabaseAdmin = serviceRoleKey
-      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey)
-      : createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          {
-            global: {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          }
-        )
-
-    // Try to find subscription by user_id first, then by email
-    let subscription = null
-    let error = null
-
-    // First try by email (most reliable since it's stored in the table)
-    if (userEmail) {
-      const result = await supabaseAdmin
-        .from("subscriptions")
-        .select("*")
-        .eq("email", userEmail)
-        .maybeSingle()
-
-      subscription = result.data
-      error = result.error
-      console.log("[v0] API - Query by email result:", {
-        email: userEmail,
-        hasData: !!result.data,
-        error: result.error?.message,
-        errorCode: result.error?.code,
-        status: result.status
-      })
-    }
-
-    // If not found by email, try by user_id
-    if (!subscription && userId) {
-      const result = await supabaseAdmin
-        .from("subscriptions")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle()
-
-      subscription = result.data
-      error = result.error
-      console.log("[v0] API - Query by user_id result:", {
-        userId: userId,
-        hasData: !!result.data,
-        error: result.error?.message,
-        errorCode: result.error?.code
-      })
-    }
-
-    console.log("[v0] API - Final subscription:", subscription)
+    if (error) throw error
 
     return NextResponse.json({ subscription })
   } catch (error) {

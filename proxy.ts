@@ -6,5 +6,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // Only protected pages need a server-side session refresh. Keeping the
+  // public landing and API routes out prevents every visitor/bot request from
+  // becoming an additional Supabase Auth request.
+  matcher: ["/dashboard/:path*", "/admin/:path*"],
 }

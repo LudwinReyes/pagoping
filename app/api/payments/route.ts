@@ -89,7 +89,7 @@ export async function GET() {
     // Obtener pagos del usuario
     const { data: payments, error } = await supabase
       .from("payments")
-      .select("*")
+      .select("id,user_id,device_id,sender_name,amount,operation_code,created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(100)

@@ -1,8 +1,15 @@
 import { createBrowserClient } from "@supabase/ssr"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
-// El ejemplo oficial no usa singleton para el cliente del navegador
+let browserClient: SupabaseClient | undefined
+
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const key = (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)!
-  return createBrowserClient(url, key)
+
+  if (!browserClient) {
+    browserClient = createBrowserClient(url, key)
+  }
+
+  return browserClient
 }

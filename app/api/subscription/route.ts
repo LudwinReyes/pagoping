@@ -16,7 +16,7 @@ export async function GET() {
     // Obtener suscripción
     const { data: subscription, error } = await supabase
       .from("subscriptions")
-      .select("*")
+      .select("user_id,email,tier,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
       .eq("user_id", user.id)
       .single()
 

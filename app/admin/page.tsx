@@ -4,17 +4,10 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { AdminDashboard } from "@/components/admin-dashboard"
-import type { Subscription } from "@/lib/types"
-import { useState } from "react"
 
 export default function AdminPage() {
   const { session, loading } = useAuth()
   const router = useRouter()
-  const [data, setData] = useState<{ subscriptions: Subscription[]; paymentsPerUser: Record<string, number> }>({
-    subscriptions: [],
-    paymentsPerUser: {},
-  })
-  const [isLoadingData, setIsLoadingData] = useState(true)
 
   useEffect(() => {
     if (!loading) {
@@ -24,35 +17,10 @@ export default function AdminPage() {
         return
       }
 
-      const loadData = async () => {
-        try {
-          const token = localStorage.getItem("auth_token")
-          const response = await fetch("/api/admin/subscriptions", {
-            headers: token
-              ? {
-                  Authorization: `Bearer ${token}`,
-                }
-              : {},
-          })
-          const result = await response.json()
-
-          if (response.ok) {
-            setData(result)
-          } else {
-            console.error("Error fetching data:", result.error)
-          }
-        } catch (error) {
-          console.error("Error loading admin data:", error)
-        } finally {
-          setIsLoadingData(false)
-        }
-      }
-
-      loadData()
     }
   }, [session, loading, router])
 
-  if (loading || isLoadingData) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -65,8 +33,7 @@ export default function AdminPage() {
 
   return (
     <AdminDashboard
-      subscriptions={data.subscriptions}
-      paymentsPerUser={data.paymentsPerUser}
+      subscriptions={[]}
       adminEmail={session?.user?.email || ""}
     />
   )

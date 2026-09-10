@@ -1,55 +1,13 @@
-import { createServerClient } from "@supabase/ssr"
-import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
+import { authenticateRequest, createServiceRoleClient, isAdmin } from "@/lib/api-auth"
 
 export async function GET(request: Request) {
   try {
-    const authHeader = request.headers.get("Authorization")
-    const token = authHeader?.replace("Bearer ", "")
+    const auth = await authenticateRequest(request)
+    if (!auth) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+    if (!isAdmin(auth.user)) return NextResponse.json({ error: "No autorizado" }, { status: 403 })
 
-    console.log("[v0] API - Authorization header:", !!authHeader)
-    console.log("[v0] API - Token extracted:", !!token)
-
-    if (!token) {
-      console.log("[v0] API - No token provided")
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-    }
-
-    let userEmail: string
-    try {
-      const parts = token.split(".")
-      if (parts.length !== 3) {
-        throw new Error("Invalid token format")
-      }
-      const payload = JSON.parse(Buffer.from(parts[1], "base64").toString())
-      userEmail = payload.email
-      console.log("[v0] API - User email from token:", userEmail)
-    } catch (err) {
-      console.log("[v0] API - Failed to decode token:", err)
-      return NextResponse.json({ error: "Token inválido" }, { status: 401 })
-    }
-
-    // Verify user is admin
-    if (userEmail !== "ludwintac@gmail.com") {
-      console.log("[v0] API - User not admin:", userEmail)
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 })
-    }
-
-    const cookieStore = await cookies()
-    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
-          } catch { }
-        },
-      },
-    })
-
-    console.log("[v0] API - Fetching subscriptions from Supabase...")
+    const supabase = createServiceRoleClient()
 
     // Get search query parameter
     const { searchParams } = new URL(request.url)
@@ -57,8 +15,9 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from("subscriptions")
-      .select("*")
+      .select("user_id,email,tier,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
       .order("created_at", { ascending: false })
+      .limit(100)
 
     // Apply search filter if provided
     if (searchQuery && searchQuery.length >= 2) {
@@ -73,25 +32,15 @@ export async function GET(request: Request) {
       throw subsError
     }
 
-    console.log("[v0] API - Subscriptions found:", subscriptions?.length || 0)
+    const subscriptionIds = (subscriptions || []).map((subscription) => subscription.user_id)
+    const { data: devices, error: devicesError } = subscriptionIds.length
+      ? await supabase.from("devices").select("user_id").in("user_id", subscriptionIds)
+      : { data: [], error: null }
 
-    // Get payments count per user
-    const { data: payments, error: paymentsError } = await supabase.from("payments").select("user_id")
-
-    if (paymentsError) {
-      console.log("[v0] API - Payments error:", paymentsError)
-      throw paymentsError
-    }
-
-    const paymentsPerUser: Record<string, number> = {}
-    payments?.forEach((p: any) => {
-      paymentsPerUser[p.user_id] = (paymentsPerUser[p.user_id] || 0) + 1
-    })
-
-    const { data: devices, error: devicesError } = await supabase.from("devices").select("user_id, role")
+    if (devicesError) throw devicesError
 
     const devicesPerUser: Record<string, number> = {}
-    devices?.forEach((d: any) => {
+    devices?.forEach((d: { user_id: string }) => {
       devicesPerUser[d.user_id] = (devicesPerUser[d.user_id] || 0) + 1
     })
 
@@ -101,10 +50,8 @@ export async function GET(request: Request) {
       deviceCount: devicesPerUser[sub.user_id] || 0,
     }))
 
-    console.log("[v0] API - Returning", subscriptions?.length || 0, "subscriptions")
     return NextResponse.json({
       subscriptions: subscriptionsWithDevices || [],
-      paymentsPerUser,
     })
   } catch (error) {
     console.log("[v0] API - Error:", error)

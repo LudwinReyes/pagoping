@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/client"
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 import type { Subscription, PlanTier } from "@/lib/types"
 import { PLAN_CONFIG } from "@/lib/types"
@@ -26,7 +27,6 @@ import {
   AlertCircle,
   Info,
   Building2,
-  Clock,
   Calendar,
   CheckCircle2,
   XCircle,
@@ -43,11 +43,10 @@ interface SubscriptionWithDevices extends Subscription {
 
 interface AdminDashboardProps {
   subscriptions: Subscription[]
-  paymentsPerUser: Record<string, number>
   adminEmail: string
 }
 
-export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: AdminDashboardProps) {
+export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedUser, setSelectedUser] = useState<SubscriptionWithDevices | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -60,6 +59,7 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
   const [subs, setSubs] = useState<SubscriptionWithDevices[]>(subscriptions)
   const [isSearching, setIsSearching] = useState(false)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const realtimeRefreshRef = useRef<NodeJS.Timeout | null>(null)
   const router = useRouter()
 
   // Function to load subscriptions from API
@@ -102,14 +102,13 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
     }
   }
 
-  // Initial load
-  useEffect(() => {
-    loadSubscriptions()
-  }, [])
-
   // Supabase Realtime subscription - listen for changes to subscriptions table
   useEffect(() => {
     const supabase = createClient()
+    const scheduleRefresh = () => {
+      if (realtimeRefreshRef.current) clearTimeout(realtimeRefreshRef.current)
+      realtimeRefreshRef.current = setTimeout(() => loadSubscriptions(), 500)
+    }
 
     // Subscribe to changes on the subscriptions table
     const channel = supabase
@@ -117,24 +116,23 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'subscriptions' },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           console.log('[v0] Realtime: Subscriptions changed', payload.eventType)
-          // Reload all subscriptions when any change happens
-          loadSubscriptions()
+          scheduleRefresh()
         }
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'devices' },
-        (payload) => {
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           console.log('[v0] Realtime: Devices changed', payload.eventType)
-          // Reload to update device counts
-          loadSubscriptions()
+          scheduleRefresh()
         }
       )
       .subscribe()
 
     return () => {
+      if (realtimeRefreshRef.current) clearTimeout(realtimeRefreshRef.current)
       supabase.removeChannel(channel)
     }
   }, [])
@@ -148,8 +146,10 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
 
     // If search is empty, reload all subscriptions
     if (searchTerm.length === 0) {
-      loadSubscriptions()
-      return
+      searchTimeoutRef.current = setTimeout(() => loadSubscriptions(), 0)
+      return () => {
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current)
+      }
     }
 
     // If search term is too short, don't search
@@ -158,8 +158,8 @@ export function AdminDashboard({ subscriptions, paymentsPerUser, adminEmail }: A
     }
 
     // Set a timeout to debounce the search
-    setIsSearching(true)
     searchTimeoutRef.current = setTimeout(() => {
+      setIsSearching(true)
       console.log('[v0] Searching for:', searchTerm)
       loadSubscriptions(searchTerm)
     }, 500)

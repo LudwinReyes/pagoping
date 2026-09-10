@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import { createClient } from "@/lib/client"
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js"
 import { useRouter } from "next/navigation"
 import type { Subscription, Payment, Device } from "@/lib/types"
 import { PLAN_CONFIG } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Dialog,
@@ -21,7 +21,6 @@ import {
 import {
   DollarSign,
   Volume2,
-  VolumeX,
   Download,
   Lock,
   Smartphone,
@@ -31,7 +30,6 @@ import {
   MessageCircle,
   RefreshCw,
   Trash2,
-  UserPlus,
   Loader2,
   TrendingUp,
   Users,
@@ -42,7 +40,6 @@ import QRCode from "qrcode"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Logo } from "@/components/logo"
 import { PWAInstallBanner } from "@/components/pwa-install-banner"
-import { usePWA } from "@/components/pwa-provider"
 
 interface ClientDashboardProps {
   subscription: Subscription | null
@@ -50,7 +47,8 @@ interface ClientDashboardProps {
   recentPayments: Payment[]
   devices: Device[]
   userEmail: string
-  onRefresh?: () => void  // Callback to reload data
+  onRefresh?: () => Promise<void>
+  onPaymentInserted?: (payment: Payment) => void
 }
 
 export function ClientDashboard({
@@ -60,20 +58,20 @@ export function ClientDashboard({
   devices,
   userEmail,
   onRefresh,
+  onPaymentInserted,
 }: ClientDashboardProps) {
   const [ttsEnabled, setTtsEnabled] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const [previousPaymentsCount, setPreviousPaymentsCount] = useState(recentPayments.length)
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
   const [isGeneratingQR, setIsGeneratingQR] = useState(false)
   const [qrModalOpen, setQrModalOpen] = useState(false)
   const [devicesModalOpen, setDevicesModalOpen] = useState(false)
-  const [currentDevices, setCurrentDevices] = useState<Device[]>(devices)
+  const [removedDeviceIds, setRemovedDeviceIds] = useState<string[]>([])
   const [isDeletingDevice, setIsDeletingDevice] = useState<string | null>(null)
   const [selectedAction, setSelectedAction] = useState<string | null>(null)
   const router = useRouter()
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null)
-  const { isStandalone } = usePWA()
+  const currentDevices = devices.filter((device) => !removedDeviceIds.includes(device.device_id))
 
   // Get business/display name
   const businessDisplayName = subscription?.display_name || subscription?.business_name || subscription?.owner_name || userEmail.split('@')[0]
@@ -88,10 +86,6 @@ export function ClientDashboard({
   const isFreeLimitReached =
     tier === "free" && (subscription?.validations_count || 0) >= (subscription?.max_validations || 5)
   const isDashboardBlocked = isExpired || isFreeLimitReached
-
-  useEffect(() => {
-    setCurrentDevices(devices)
-  }, [devices])
 
   // Subscribe to Supabase Realtime for instant payment updates
   useEffect(() => {
@@ -110,11 +104,25 @@ export function ClientDashboard({
           table: 'payments',
           filter: `user_id=eq.${subscription.user_id}`
         },
-        (payload) => {
-          console.log('🔔 Nuevo pago recibido via Realtime:', payload.new)
-          // Trigger data reload when new payment arrives
-          if (onRefresh) {
-            onRefresh()
+        (payload: RealtimePostgresChangesPayload<Payment>) => {
+          const newPayment = payload.new as Payment
+          console.log('🔔 Nuevo pago recibido via Realtime:', newPayment)
+          // The inserted row is already in the Realtime payload. Updating the
+          // local state avoids re-reading payments and devices after every sale.
+          onPaymentInserted?.(newPayment)
+
+          if (ttsEnabled) {
+            const sender = (newPayment.sender_name || "Cliente").replace(/\*/g, "").trim()
+            const amount = Number(newPayment.amount)
+            const spokenAmount = amount === 1 ? "un sol" : `${amount.toFixed(2)} soles`
+            const utterance = new SpeechSynthesisUtterance(
+              `Nuevo pago de ${sender}, monto ${spokenAmount}, código ${newPayment.operation_code}`,
+            )
+            utterance.lang = "es-PE"
+            utterance.rate = 1
+            utterance.pitch = 1
+            speechSynthesisRef.current = utterance
+            window.speechSynthesis.speak(utterance)
           }
         }
       )
@@ -127,23 +135,7 @@ export function ClientDashboard({
       console.log('🔌 Unsubscribing from Realtime')
       supabase.removeChannel(channel)
     }
-  }, [subscription?.user_id, onRefresh])
-
-  useEffect(() => {
-    if (recentPayments.length > previousPaymentsCount && ttsEnabled) {
-      const newPayment = recentPayments[0]
-      const message = `Nuevo pago de ${newPayment.sender_name}, monto ${Number(newPayment.amount).toFixed(2)} soles, código ${newPayment.operation_code}`
-
-      const utterance = new SpeechSynthesisUtterance(message)
-      utterance.lang = "es-ES"
-      utterance.rate = 1
-      utterance.pitch = 1
-
-      speechSynthesisRef.current = utterance
-      window.speechSynthesis.speak(utterance)
-    }
-    setPreviousPaymentsCount(recentPayments.length)
-  }, [recentPayments, ttsEnabled, previousPaymentsCount])
+  }, [subscription?.user_id, onPaymentInserted, ttsEnabled])
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -155,8 +147,11 @@ export function ClientDashboard({
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    router.refresh()
-    setTimeout(() => setIsRefreshing(false), 1000)
+    try {
+      await onRefresh?.()
+    } finally {
+      setIsRefreshing(false)
+    }
   }
 
   const handleExport = () => {
@@ -240,7 +235,7 @@ export function ClientDashboard({
       })
 
       if (response.ok) {
-        setCurrentDevices((prev) => prev.filter((d) => d.device_id !== deviceId))
+        setRemovedDeviceIds((previous) => [...previous, deviceId])
       } else {
         const error = await response.json()
         alert(error.error || "Error eliminando dispositivo")
@@ -252,8 +247,7 @@ export function ClientDashboard({
     }
   }
 
-  const staffDevices = currentDevices.filter((d) => (d as any).role === "viewer")
-  const listenerDevices = currentDevices.filter((d) => (d as any).role !== "viewer")
+  const staffDevices = currentDevices.filter((device) => device.role === "viewer")
 
   return (
     <div className={`min-h-screen bg-background ${isDashboardBlocked ? "relative" : ""}`}>
@@ -468,12 +462,12 @@ export function ClientDashboard({
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">{device.device_name || "Dispositivo"}</p>
                           <p className="text-xs text-muted-foreground">
-                            {(device as any).role === "viewer" ? "Empleado" : "Principal"} • Visto{" "}
+                            {device.role === "viewer" ? "Empleado" : "Principal"} • Visto{" "}
                             {formatDistanceToNow(new Date(device.last_seen), { addSuffix: true, locale: es })}
                           </p>
                         </div>
                       </div>
-                      {(device as any).role === "viewer" && (
+                      {device.role === "viewer" && (
                         <Button
                           variant="ghost"
                           size="sm"

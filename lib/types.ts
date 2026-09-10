@@ -40,6 +40,7 @@ export interface Device {
   role?: "listener" | "viewer"
   pairing_token?: string
   is_paired?: boolean
+  is_active?: boolean
 }
 
 export const PLAN_CONFIG = {

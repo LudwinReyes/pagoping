@@ -139,9 +139,8 @@ export function ClientDashboard({
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("auth_user")
-    router.push("/auth/login")
+    router.replace("/auth/login")
+    router.refresh()
   }
 
   const handleRefresh = async () => {
@@ -185,11 +184,9 @@ export function ClientDashboard({
   const handleDeleteDevice = async (deviceId: string) => {
     setIsDeletingDevice(deviceId)
     try {
-      const token = localStorage.getItem("auth_token")
       const response = await fetch("/api/devices/delete", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ deviceId }),

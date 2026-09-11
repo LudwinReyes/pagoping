@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Logo } from "@/components/logo"
-import { Smartphone, Shield, Heart } from "lucide-react"
+import { Shield } from "lucide-react"
 
 export function Footer() {
   return (
@@ -99,6 +99,11 @@ export function Footer() {
                   Panel de Control
                 </Link>
               </li>
+              <li>
+                <Link href="/privacidad" className="hover:text-primary transition-colors">
+                  Política de Privacidad
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -106,6 +111,9 @@ export function Footer() {
         <div className="pt-6 sm:pt-8 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-muted-foreground text-center sm:text-left">
           <p>© {new Date().getFullYear()} PagoPing. Todos los derechos reservados.</p>
           <div className="flex items-center gap-4">
+            <Link href="/privacidad" className="hover:text-primary transition-colors">
+              Privacidad
+            </Link>
             <span className="flex items-center gap-1">
               <Shield className="h-3.5 w-3.5 text-emerald-500" />
               Conexión Cifrada SSL

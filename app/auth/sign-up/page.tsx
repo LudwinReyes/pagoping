@@ -23,10 +23,8 @@ import {
   ArrowLeft,
   Loader2,
   ShieldCheck,
-  CheckCircle2,
   Sparkles,
   ArrowRight,
-  Smartphone,
   Check
 } from "lucide-react"
 
@@ -372,7 +370,13 @@ export default function SignUpPage() {
 
         {/* Bottom security assurance */}
         <div className="w-full max-w-md mx-auto text-center text-[11px] text-muted-foreground/70">
-          <p>Al registrarte aceptas las políticas de uso y privacidad de PagoPing.</p>
+          <p>
+            Al registrarte aceptas la{" "}
+            <Link href="/privacidad" className="font-medium text-primary underline underline-offset-2">
+              Política de Privacidad
+            </Link>{" "}
+            de PagoPing.
+          </p>
         </div>
       </div>
     </div>

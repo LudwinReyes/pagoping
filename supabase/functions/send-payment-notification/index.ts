@@ -3,9 +3,8 @@
 //
 // Deploy: supabase functions deploy send-payment-notification
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { createRemoteJWKSet, jwtVerify, SignJWT } from 'https://deno.land/x/jose@v4.14.4/index.ts'
+import { createClient } from 'npm:@supabase/supabase-js@2'
+import { SignJWT, importPKCS8 } from 'npm:jose@5'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -41,7 +40,7 @@ async function getAccessToken(): Promise<string> {
         scope: 'https://www.googleapis.com/auth/firebase.messaging'
     })
         .setProtectedHeader({ alg: 'RS256', typ: 'JWT' })
-        .sign(await importPrivateKey(serviceAccount.private_key))
+        .sign(await importPKCS8(serviceAccount.private_key, 'RS256'))
 
     // Exchange JWT for access token
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -61,30 +60,20 @@ async function getAccessToken(): Promise<string> {
     return tokenData.access_token
 }
 
-// Import RSA private key for signing
-async function importPrivateKey(pem: string): Promise<CryptoKey> {
-    const pemContents = pem
-        .replace('-----BEGIN PRIVATE KEY-----', '')
-        .replace('-----END PRIVATE KEY-----', '')
-        .replace(/\n/g, '')
-
-    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0))
-
-    return await crypto.subtle.importKey(
-        'pkcs8',
-        binaryDer,
-        { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-        false,
-        ['sign']
-    )
-}
-
-serve(async (req) => {
+Deno.serve(async (req) => {
     try {
+        if (req.method !== 'POST') {
+            return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405 })
+        }
+        if (req.headers.get('Authorization') !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+        }
+
         const payload: PaymentPayload = await req.json()
         const payment = payload.record
-
-        console.log('📩 Nuevo pago recibido:', payment)
+        if (!payment?.id || !payment.user_id || typeof payment.amount !== 'number') {
+            return new Response(JSON.stringify({ error: 'Invalid payload' }), { status: 400 })
+        }
 
         // Create Supabase client with service role to bypass RLS
         const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
@@ -103,8 +92,6 @@ serve(async (req) => {
             return new Response(JSON.stringify({ error: error.message }), { status: 500 })
         }
 
-        console.log(`📱 Colaboradores encontrados: ${collaborators?.length || 0}`)
-
         if (!collaborators || collaborators.length === 0) {
             return new Response(JSON.stringify({ message: 'No collaborators with FCM tokens' }), { status: 200 })
         }
@@ -115,7 +102,7 @@ serve(async (req) => {
         const projectId = serviceAccount.project_id
 
         // Send push notification to each collaborator
-        const results = []
+        let sent = 0
         for (const collab of collaborators) {
             if (!collab.fcm_token) continue
 
@@ -154,19 +141,18 @@ serve(async (req) => {
                 }
             )
 
-            const fcmResult = await fcmResponse.json()
-            console.log(`📤 FCM Response for ${collab.device_name}:`, fcmResult)
-            results.push({ device: collab.device_name, result: fcmResult })
+            if (fcmResponse.ok) sent += 1
+            else console.error('FCM rejected a notification', fcmResponse.status)
         }
 
         return new Response(JSON.stringify({
             success: true,
-            sent_to: collaborators.length,
-            results
+            sent_to: sent
         }), { status: 200 })
 
-    } catch (err) {
-        console.error('Error:', err)
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 })
+    } catch (err: unknown) {
+        console.error('Payment notification failed')
+        const message = err instanceof Error ? err.message : 'Internal error'
+        return new Response(JSON.stringify({ error: message }), { status: 500 })
     }
 })

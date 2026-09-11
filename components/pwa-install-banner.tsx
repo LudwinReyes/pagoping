@@ -88,8 +88,8 @@ export function PWAInstallBanner() {
             </p>
             <ol className="list-decimal pl-5 space-y-0.5 text-[11px] text-muted-foreground">
               <li>Toca el botón <strong>Compartir</strong> en la barra inferior de Safari.</li>
-              <li>Desliza y presiona <strong>"Añadir a pantalla de inicio"</strong> <PlusSquare className="inline h-3 w-3" />.</li>
-              <li>Confirma pulsando <strong>"Añadir"</strong> arriba a la derecha.</li>
+              <li>Desliza y presiona <strong>&ldquo;Añadir a pantalla de inicio&rdquo;</strong> <PlusSquare className="inline h-3 w-3" />.</li>
+              <li>Confirma pulsando <strong>&ldquo;Añadir&rdquo;</strong> arriba a la derecha.</li>
             </ol>
           </div>
         )}

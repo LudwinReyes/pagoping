@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import type { Session, User } from "@supabase/supabase-js"
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@/lib/client"
 
 interface AuthContextType {
   session: Session | null
@@ -18,54 +18,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const supabase = createClient()
+    let active = true
+
     const checkSession = async () => {
       try {
-        const authToken = localStorage.getItem("auth_token")
-        const authUser = localStorage.getItem("auth_user")
-
-        console.log("[v0] AuthProvider - Checking auth:", { hasToken: !!authToken, hasUser: !!authUser })
-
-        if (authToken && authUser) {
-          console.log("[v0] AuthProvider - Session from localStorage, token exists")
-          const user = JSON.parse(authUser)
-          setSession({
-            access_token: authToken,
-            token_type: "bearer",
-            expires_in: 3600,
-            expires_at: Math.floor(Date.now() / 1000) + 3600,
-            refresh_token: "",
-            user,
-          } as any)
-          setLoading(false)
-          return
-        }
-
-        const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
-
         const {
           data: { session: currentSession },
         } = await supabase.auth.getSession()
-
-        console.log("[v0] AuthProvider - Session from Supabase:", !!currentSession)
-        setSession(currentSession)
+        if (active) setSession(currentSession)
       } catch (error) {
-        console.error("[v0] Error checking session:", error)
+        console.error("[PagoPing] Error verificando la sesión:", error)
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
 
-    checkSession()
+    void checkSession()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession)
+      setLoading(false)
+    })
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "auth_token" && e.newValue) {
-        checkSession()
-      }
+    return () => {
+      active = false
+      subscription.unsubscribe()
     }
-
-    window.addEventListener("storage", handleStorageChange)
-
-    return () => window.removeEventListener("storage", handleStorageChange)
   }, [])
 
   return (

@@ -50,7 +50,7 @@ export function Comparison() {
               <div className="flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-background/60 border border-rose-500/20">
                 <XCircle className="h-4 w-4 sm:h-5 sm:w-5 text-rose-500 shrink-0 mt-0.5" />
                 <p>
-                  <strong>Interrupción constante:</strong> Tus cajeros o meseros tienen que llamar al dueño por teléfono a cada rato para preguntar: <em>"¿Te llegó el Yape?"</em>.
+                  <strong>Interrupción constante:</strong> Tus cajeros o meseros tienen que llamar al dueño por teléfono a cada rato para preguntar: <em>&ldquo;¿Te llegó el Yape?&rdquo;</em>.
                 </p>
               </div>
 
@@ -89,7 +89,7 @@ export function Comparison() {
               <div className="flex items-start gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-background/60 border border-emerald-500/25">
                 <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0 mt-0.5" />
                 <p>
-                  <strong>Anuncio inmediato por voz:</strong> El parlante canta: <em>"¡Pago de 45 soles recibido de Juan!"</em> en menos de 1 segundo.
+                  <strong>Anuncio inmediato por voz:</strong> El parlante canta: <em>&ldquo;¡Pago de 45 soles recibido de Juan!&rdquo;</em> en menos de 1 segundo.
                 </p>
               </div>
 

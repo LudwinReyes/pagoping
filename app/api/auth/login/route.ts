@@ -1,12 +1,20 @@
 import { createClient } from "@/lib/server"
 import { NextResponse } from "next/server"
+import { z } from "zod"
+
+const credentialsSchema = z.object({
+  email: z.string().trim().email().max(254),
+  password: z.string().min(6).max(256),
+})
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json()
+  const parsed = credentialsSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Credenciales no válidas" }, { status: 400 })
+  }
+  const { email, password } = parsed.data
 
   const supabase = await createClient()
-
-  console.log("[v0] API - Attempting login for:", email)
 
   const { error, data: authData } = await supabase.auth.signInWithPassword({
     email,
@@ -14,20 +22,13 @@ export async function POST(request: Request) {
   })
 
   if (error) {
-    console.log("[v0] API - Login error:", error.message)
-    return NextResponse.json({ error: error.message }, { status: 401 })
+    return NextResponse.json({ error: "Correo o contraseña incorrectos" }, { status: 401 })
   }
-
-  console.log("[v0] API - Login successful")
-  console.log("[v0] API - Session exists:", !!authData.session)
 
   return NextResponse.json(
     {
       success: true,
-      user: authData.user,
-      session: authData.session,
-      accessToken: authData.session?.access_token,
-      redirectTo: email === "ludwintac@gmail.com" ? "/admin" : "/dashboard",
+      redirectTo: authData.user.app_metadata?.role === "admin" ? "/admin" : "/dashboard",
     },
     { status: 200 },
   )

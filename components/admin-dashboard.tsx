@@ -65,24 +65,13 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
   // Function to load subscriptions from API
   const loadSubscriptions = async (search?: string) => {
     try {
-      const token = localStorage.getItem("auth_token")
-
-      if (!token) {
-        setError("No autenticado")
-        setLoading(false)
-        return
-      }
-
       const url = search && search.length >= 2
         ? `/api/admin/subscriptions?search=${encodeURIComponent(search)}`
         : "/api/admin/subscriptions"
 
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       })
 
       if (!response.ok) {
@@ -230,14 +219,11 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
     if (!selectedUser) return
 
     setIsLoading(true)
-    const token = localStorage.getItem("auth_token")
-
     const actualTier = newPlan === "annual" ? "business" : newPlan
 
     const response = await fetch("/api/admin/update-plan", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -254,11 +240,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
     setIsLoading(false)
 
     if (response.ok) {
-      const dataResponse = await fetch("/api/admin/subscriptions", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const dataResponse = await fetch("/api/admin/subscriptions")
 
       if (dataResponse.ok) {
         const data = await dataResponse.json()
@@ -276,9 +258,8 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("auth_user")
-    router.push("/auth/login")
+    router.replace("/auth/login")
+    router.refresh()
   }
 
   const getPlanBadge = (tier: PlanTier) => {

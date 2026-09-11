@@ -1,7 +1,19 @@
 import { createClient } from "@supabase/supabase-js"
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
+function requireEnv(name: string): string {
+  const value = process.env[name]
+  if (!value) throw new Error(`Falta la variable de entorno ${name}`)
+  return value
+}
+
+const SUPABASE_URL = requireEnv("NEXT_PUBLIC_SUPABASE_URL")
+const SUPABASE_SERVICE_ROLE_KEY = requireEnv("SUPABASE_SERVICE_ROLE_KEY")
+const ADMIN_EMAIL = requireEnv("PAGOPING_ADMIN_EMAIL")
+const ADMIN_PASSWORD = requireEnv("PAGOPING_ADMIN_PASSWORD")
+
+if (ADMIN_PASSWORD.length < 12) {
+  throw new Error("PAGOPING_ADMIN_PASSWORD debe tener al menos 12 caracteres")
+}
 
 async function createAdminUser() {
   // Usar service role key para crear usuarios sin confirmación de email
@@ -12,16 +24,14 @@ async function createAdminUser() {
     },
   })
 
-  const adminEmail = "ludwintac@gmail.com"
-  const adminPassword = "ludwintac@gmail.com"
-
   console.log("Creando usuario administrador...")
 
   // Crear usuario con el Admin API
   const { data, error } = await supabase.auth.admin.createUser({
-    email: adminEmail,
-    password: adminPassword,
+    email: ADMIN_EMAIL,
+    password: ADMIN_PASSWORD,
     email_confirm: true, // Confirmar email automáticamente
+    app_metadata: { role: "admin" },
   })
 
   if (error) {

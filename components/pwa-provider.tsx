@@ -7,6 +7,10 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>
 }
 
+interface IOSNavigator extends Navigator {
+  standalone?: boolean
+}
+
 interface PWAContextType {
   isInstallable: boolean
   isStandalone: boolean
@@ -27,34 +31,17 @@ const PWAContext = createContext<PWAContextType>({
 
 export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [isStandalone, setIsStandalone] = useState(false)
-  const [isIOS, setIsIOS] = useState(false)
-  const [isDismissed, setIsDismissed] = useState(false)
+  const [isStandalone, setIsStandalone] = useState(() =>
+    typeof window !== "undefined" && (window.matchMedia("(display-mode: standalone)").matches || (window.navigator as IOSNavigator).standalone === true),
+  )
+  const [isIOS] = useState(() =>
+    typeof window !== "undefined" && /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase()),
+  )
+  const [isDismissed, setIsDismissed] = useState(() =>
+    typeof window !== "undefined" && sessionStorage.getItem("pagoping_pwa_dismissed") === "true",
+  )
 
   useEffect(() => {
-    // Check if dismissed before in session
-    if (typeof window !== "undefined") {
-      const dismissed = sessionStorage.getItem("pagoping_pwa_dismissed") === "true"
-      if (dismissed) setIsDismissed(true)
-    }
-
-    // Check standalone mode
-    const checkStandalone = () => {
-      const isStandaloneMedia = window.matchMedia("(display-mode: standalone)").matches
-      const isIOSStandalone = (window.navigator as any).standalone === true
-      setIsStandalone(Boolean(isStandaloneMedia || isIOSStandalone))
-    }
-
-    // Detect iOS
-    const checkIOS = () => {
-      const userAgent = window.navigator.userAgent.toLowerCase()
-      const isAppleDevice = /iphone|ipad|ipod/.test(userAgent)
-      setIsIOS(isAppleDevice)
-    }
-
-    checkStandalone()
-    checkIOS()
-
     // Register Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker

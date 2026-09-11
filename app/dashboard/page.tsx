@@ -25,9 +25,7 @@ export default function DashboardPage() {
   const [isLoadingData, setIsLoadingData] = useState(true)
 
   const loadDashboardData = useCallback(async () => {
-    const token = localStorage.getItem("auth_token")
     const response = await fetch("/api/user/dashboard", {
-      headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
     })
 
@@ -51,8 +49,7 @@ export default function DashboardPage() {
         return
       }
 
-      if (session.user?.email === "ludwintac@gmail.com") {
-        console.log("[v0] Dashboard Page - Is admin, redirecting to /admin")
+      if (session.user.app_metadata?.role === "admin") {
         router.push("/admin")
         return
       }

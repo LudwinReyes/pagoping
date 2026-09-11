@@ -57,7 +57,7 @@ export default function InstallationPage() {
                                 En Android (Chrome):
                             </p>
                             <p className="text-muted-foreground text-xs leading-relaxed">
-                                Ingresa a <Link href="/dashboard" className="text-primary font-medium underline">tu Dashboard</Link> y pulsa el botón <strong>"Instalar"</strong> que aparece arriba, o toca el menú (⋮) de Chrome y elige <strong>"Instalar aplicación"</strong>.
+                                Ingresa a <Link href="/dashboard" className="text-primary font-medium underline">tu Dashboard</Link> y pulsa el botón <strong>&ldquo;Instalar&rdquo;</strong> que aparece arriba, o toca el menú (⋮) de Chrome y elige <strong>&ldquo;Instalar aplicación&rdquo;</strong>.
                             </p>
                         </div>
                         <div className="p-3.5 rounded-2xl bg-card border border-border/80 space-y-1.5">
@@ -66,7 +66,7 @@ export default function InstallationPage() {
                                 En iPhone / iOS (Safari):
                             </p>
                             <p className="text-muted-foreground text-xs leading-relaxed">
-                                Abre <Link href="/dashboard" className="text-primary font-medium underline">tu Dashboard</Link> en Safari, presiona el botón <strong>Compartir</strong> (icono <Share2 className="inline h-3 w-3" />) y selecciona <strong>"Añadir a pantalla de inicio"</strong>.
+                                Abre <Link href="/dashboard" className="text-primary font-medium underline">tu Dashboard</Link> en Safari, presiona el botón <strong>Compartir</strong> (icono <Share2 className="inline h-3 w-3" />) y selecciona <strong>&ldquo;Añadir a pantalla de inicio&rdquo;</strong>.
                             </p>
                         </div>
                     </div>
@@ -111,7 +111,7 @@ export default function InstallationPage() {
                             icon={<Smartphone className="h-5 w-5 sm:h-6 sm:w-6 text-purple-500" />}
                         >
                             <p>
-                                Una vez descargado, abre la notificación de descarga o dirígete a tu carpeta de <strong>"Descargas"</strong> y tócalo.
+                                Una vez descargado, abre la notificación de descarga o dirígete a tu carpeta de <strong>&ldquo;Descargas&rdquo;</strong> y tócalo.
                             </p>
                         </StepCard>
 
@@ -121,7 +121,7 @@ export default function InstallationPage() {
                             icon={<Settings className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500" />}
                         >
                             <p>
-                                Si el navegador muestra que "no puede instalar apps de fuentes desconocidas", toca en <strong>Configuración</strong> y activa <strong>"Permitir desde esta fuente"</strong>.
+                                Si el navegador muestra que &ldquo;no puede instalar apps de fuentes desconocidas&rdquo;, toca en <strong>Configuración</strong> y activa <strong>&ldquo;Permitir desde esta fuente&rdquo;</strong>.
                             </p>
                         </StepCard>
 
@@ -139,7 +139,7 @@ export default function InstallationPage() {
                     <div className="p-5 bg-muted rounded-2xl text-center text-xs sm:text-sm">
                         <h3 className="font-semibold mb-1 text-foreground">¿Problemas con Google Play Protect?</h3>
                         <p className="text-muted-foreground max-w-lg mx-auto">
-                            Si ves un aviso de Play Protect, selecciona <strong>"Más detalles"</strong> y luego <strong>"Instalar de todas formas"</strong>. Esto ocurre con aplicaciones corporativas nuevas distribuidas directamente sin pasar por Play Store.
+                            Si ves un aviso de Play Protect, selecciona <strong>&ldquo;Más detalles&rdquo;</strong> y luego <strong>&ldquo;Instalar de todas formas&rdquo;</strong>. Esto ocurre con aplicaciones corporativas nuevas distribuidas directamente sin pasar por Play Store.
                         </p>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js"
+import { createClient as createSupabaseClient, type SupabaseClient, type User } from "@supabase/supabase-js"
+import { createClient } from "@/lib/server"
 
 export interface AuthenticatedRequest {
   token: string
@@ -20,28 +21,23 @@ function getPublishableKey() {
 
 export async function authenticateRequest(request: Request): Promise<AuthenticatedRequest | null> {
   const authHeader = request.headers.get("authorization")
-  if (!authHeader?.startsWith("Bearer ")) return null
-
-  const token = authHeader.slice(7).trim()
-  if (!token) return null
-
-  const supabase = createClient(getSupabaseUrl(), getPublishableKey(), {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-    global: {
-      headers: { Authorization: `Bearer ${token}` },
-    },
-  })
+  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7).trim() : ""
+  const supabase = bearerToken
+    ? createSupabaseClient(getSupabaseUrl(), getPublishableKey(), {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+        global: { headers: { Authorization: `Bearer ${bearerToken}` } },
+      })
+    : await createClient()
 
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser(token)
+  } = await supabase.auth.getUser(bearerToken || undefined)
 
   if (error || !user) return null
+
+  const token = bearerToken || (await supabase.auth.getSession()).data.session?.access_token
+  if (!token) return null
   return { token, user, supabase }
 }
 
@@ -49,7 +45,7 @@ export function createServiceRoleClient() {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceRoleKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY no está configurada")
 
-  return createClient(getSupabaseUrl(), serviceRoleKey, {
+  return createSupabaseClient(getSupabaseUrl(), serviceRoleKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
@@ -59,6 +55,5 @@ export function createServiceRoleClient() {
 }
 
 export function isAdmin(user: User) {
-  const configuredAdmin = process.env.ADMIN_EMAIL || "ludwintac@gmail.com"
-  return user.app_metadata?.role === "admin" || user.email?.toLowerCase() === configuredAdmin.toLowerCase()
+  return user.app_metadata?.role === "admin"
 }

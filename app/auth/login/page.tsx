@@ -3,7 +3,6 @@
 import type React from "react"
 import { useState, useRef } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { Button } from "@/components/ui/button"
@@ -27,7 +26,6 @@ import {
 } from "lucide-react"
 
 export default function LoginPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -63,8 +61,6 @@ export default function LoginPage() {
     const password = formData.get("password") as string
 
     try {
-      console.log("[v0] Login page - Sending to API:", email)
-
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,13 +75,8 @@ export default function LoginPage() {
         return
       }
 
-      if (data.accessToken) {
-        localStorage.setItem("auth_token", data.accessToken)
-        localStorage.setItem("auth_user", JSON.stringify(data.user))
-      }
-
       window.location.href = data.redirectTo || "/dashboard"
-    } catch (err) {
+    } catch {
       setError("Ocurrió un error inesperado. Intenta de nuevo.")
       setLoading(false)
     }

@@ -31,10 +31,9 @@ export function CollaboratorsManager({ maxCollaborators, initialCount = 0 }: Col
   const [password, setPassword] = useState("")
 
   const request = useCallback(async (payload: Record<string, unknown>) => {
-    const token = localStorage.getItem("auth_token")
     const response = await fetch("/api/collaborators", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8" },
       body: JSON.stringify(payload),
     })
     const result = await response.json()
@@ -56,7 +55,9 @@ export function CollaboratorsManager({ maxCollaborators, initialCount = 0 }: Col
   }, [request])
 
   useEffect(() => {
-    if (open) void loadCollaborators()
+    if (!open) return
+    const timer = window.setTimeout(() => void loadCollaborators(), 0)
+    return () => window.clearTimeout(timer)
   }, [open, loadCollaborators])
 
   const resetForm = () => {

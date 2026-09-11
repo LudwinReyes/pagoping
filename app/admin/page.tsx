@@ -11,7 +11,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!loading) {
-      if (!session || session.user?.email !== "ludwintac@gmail.com") {
+      if (!session || session.user.app_metadata?.role !== "admin") {
         console.log("[v0] Admin Page - Not authenticated or not admin, redirecting")
         router.push("/auth/login")
         return

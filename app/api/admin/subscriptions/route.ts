@@ -33,25 +33,24 @@ export async function GET(request: Request) {
     }
 
     const subscriptionIds = (subscriptions || []).map((subscription) => subscription.user_id)
-    const { data: devices, error: devicesError } = subscriptionIds.length
-      ? await supabase.from("devices").select("user_id").in("user_id", subscriptionIds)
+    const { data: collaborators, error: collaboratorsError } = subscriptionIds.length
+      ? await supabase.from("collaborators").select("owner_id").in("owner_id", subscriptionIds)
       : { data: [], error: null }
 
-    if (devicesError) throw devicesError
+    if (collaboratorsError) throw collaboratorsError
 
-    const devicesPerUser: Record<string, number> = {}
-    devices?.forEach((d: { user_id: string }) => {
-      devicesPerUser[d.user_id] = (devicesPerUser[d.user_id] || 0) + 1
+    const collaboratorsPerUser: Record<string, number> = {}
+    collaborators?.forEach((collaborator: { owner_id: string }) => {
+      collaboratorsPerUser[collaborator.owner_id] = (collaboratorsPerUser[collaborator.owner_id] || 0) + 1
     })
 
-    // Add device count to each subscription
-    const subscriptionsWithDevices = subscriptions?.map((sub) => ({
+    const subscriptionsWithCollaborators = subscriptions?.map((sub) => ({
       ...sub,
-      deviceCount: devicesPerUser[sub.user_id] || 0,
+      collaboratorCount: collaboratorsPerUser[sub.user_id] || 0,
     }))
 
     return NextResponse.json({
-      subscriptions: subscriptionsWithDevices || [],
+      subscriptions: subscriptionsWithCollaborators || [],
     })
   } catch (error) {
     console.log("[v0] API - Error:", error)

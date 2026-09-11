@@ -38,7 +38,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Logo } from "@/components/logo"
 
 interface SubscriptionWithDevices extends Subscription {
-  deviceCount?: number
+  collaboratorCount?: number
 }
 
 interface AdminDashboardProps {
@@ -316,7 +316,7 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
 
   // Get staff count display with progress bar
   const getStaffDisplay = (sub: SubscriptionWithDevices) => {
-    const current = sub.deviceCount || 0
+    const current = sub.collaboratorCount || 0
     const max = sub.max_devices
     const percentage = max > 0 ? (current / max) * 100 : 0
 

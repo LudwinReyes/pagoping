@@ -131,7 +131,7 @@ export function FeaturesBento() {
                 Múltiples Celulares y Cajas
               </CardTitle>
               <CardDescription className="text-xs sm:text-sm text-muted-foreground">
-                Sincroniza hasta 3 teléfonos al mismo tiempo. El dueño puede ver las ventas desde casa mientras los empleados atienden en el local.
+                Sincroniza hasta 4 teléfonos al mismo tiempo. El dueño puede ver las ventas desde casa mientras los empleados atienden en el local.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6 pt-0 sm:pt-2">

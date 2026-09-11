@@ -125,8 +125,8 @@ export function CollaboratorsManager({ maxCollaborators, initialCount = 0 }: Col
     }
   }
 
-  const assignedCount = open ? collaborators.length : initialCount
-  const available = Math.max(maxCollaborators - collaborators.length, 0)
+  const assignedCount = open && !loading ? collaborators.length : initialCount
+  const available = Math.max(maxCollaborators - assignedCount, 0)
   const initials = useMemo(() => (value: string) => value.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase(), [])
 
   return (

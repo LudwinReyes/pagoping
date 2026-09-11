@@ -13,7 +13,7 @@ export interface Subscription {
   can_export: boolean
   is_active: boolean
   created_at: string
-  deviceCount?: number
+  collaboratorCount?: number
   business_name?: string
   owner_name?: string
   display_name?: string

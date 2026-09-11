@@ -14,11 +14,13 @@ export default function DashboardPage() {
     todayPayments: Payment[]
     recentPayments: Payment[]
     devices: Device[]
+    collaboratorCount: number
   }>({
     subscription: null,
     todayPayments: [],
     recentPayments: [],
     devices: [],
+    collaboratorCount: 0,
   })
   const [isLoadingData, setIsLoadingData] = useState(true)
 
@@ -37,6 +39,7 @@ export default function DashboardPage() {
       todayPayments: dashboardData.todayPayments || [],
       recentPayments: dashboardData.recentPayments || [],
       devices: dashboardData.devices || [],
+      collaboratorCount: dashboardData.collaboratorCount || 0,
     })
   }, [])
 
@@ -105,6 +108,7 @@ export default function DashboardPage() {
       todayPayments={data.todayPayments}
       recentPayments={data.recentPayments}
       devices={data.devices}
+      collaboratorCount={data.collaboratorCount}
       userEmail={session?.user?.email || ""}
       onRefresh={loadDashboardData}
       onPaymentInserted={handlePaymentInserted}

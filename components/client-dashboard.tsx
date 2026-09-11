@@ -46,6 +46,7 @@ interface ClientDashboardProps {
   todayPayments: Payment[]
   recentPayments: Payment[]
   devices: Device[]
+  collaboratorCount: number
   userEmail: string
   onRefresh?: () => Promise<void>
   onPaymentInserted?: (payment: Payment) => void
@@ -56,6 +57,7 @@ export function ClientDashboard({
   todayPayments,
   recentPayments,
   devices,
+  collaboratorCount,
   userEmail,
   onRefresh,
   onPaymentInserted,
@@ -205,8 +207,6 @@ export function ClientDashboard({
       setIsDeletingDevice(null)
     }
   }
-
-  const staffDevices = currentDevices.filter((device) => device.role === "viewer")
 
   return (
     <div className={`min-h-screen bg-background ${isDashboardBlocked ? "relative" : ""}`}>
@@ -450,8 +450,8 @@ export function ClientDashboard({
 
           {isBusiness && (
             <CollaboratorsManager
-              maxCollaborators={Math.max((subscription?.max_devices || 1) - 1, 0)}
-              initialCount={staffDevices.length}
+              maxCollaborators={subscription?.max_devices || 0}
+              initialCount={collaboratorCount}
             />
           )}
         </div>

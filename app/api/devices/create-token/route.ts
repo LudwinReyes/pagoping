@@ -20,11 +20,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Solo disponible para plan Negocio o Empresa" }, { status: 403 })
     }
 
-    // Contar dispositivos actuales
+    // El cupo del plan corresponde a dispositivos de colaboradores. El equipo
+    // principal del dueño y los registros históricos no consumen cupos de staff.
     const { count } = await auth.supabase
       .from("devices")
       .select("device_id", { count: "exact", head: true })
       .eq("user_id", userId)
+      .eq("role", "viewer")
 
     if ((count || 0) >= subscription.max_devices) {
       return NextResponse.json(

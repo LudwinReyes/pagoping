@@ -17,8 +17,8 @@ export function Pricing() {
     if (cardsContainerRef.current) {
       gsap.fromTo(
         cardsContainerRef.current.children,
-        { scale: 0.96, opacity: 0.8 },
-        { scale: 1, opacity: 1, duration: 0.35, stagger: 0.05, ease: "power2.out" }
+        { scale: 0.97, opacity: 0.8 },
+        { scale: 1, opacity: 1, duration: 0.3, stagger: 0.04, ease: "power2.out", clearProps: "transform,opacity" }
       )
     }
   }
@@ -149,7 +149,7 @@ export function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col justify-between transition-all duration-300 rounded-2xl sm:rounded-3xl ${
+              className={`relative flex flex-col justify-between transition-all duration-300 rounded-2xl sm:rounded-3xl gpu-layer ${
                 plan.highlighted
                   ? "border-2 border-primary shadow-2xl shadow-primary/15 bg-gradient-to-b from-card via-card to-primary/5 scale-100 lg:-translate-y-2"
                   : "border-border/80 bg-card hover:border-border hover:shadow-lg"

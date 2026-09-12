@@ -103,20 +103,20 @@ export function InteractiveSimulator() {
 
     setLastEvent(newPayment)
 
-    // GSAP notification pop animation
+    // Hardware-accelerated notification pop animation with clearProps
     if (phoneNotificationRef.current) {
       gsap.fromTo(
         phoneNotificationRef.current,
-        { scale: 0.8, y: -20, opacity: 0 },
-        { scale: 1, y: 0, opacity: 1, duration: 0.4, ease: "back.out(2)" }
+        { scale: 0.88, y: -12, opacity: 0 },
+        { scale: 1, y: 0, opacity: 1, duration: 0.35, ease: "back.out(1.8)", clearProps: "transform,opacity" }
       )
     }
 
     if (soundwaveRef.current) {
       gsap.fromTo(
         soundwaveRef.current,
-        { opacity: 0, scaleX: 0.5 },
-        { opacity: 1, scaleX: 1, duration: 0.3, yoyo: true, repeat: 3 }
+        { opacity: 0.2, scaleX: 0.7 },
+        { opacity: 1, scaleX: 1, duration: 0.25, yoyo: true, repeat: 3, clearProps: "transform,opacity" }
       )
     }
 
@@ -127,8 +127,8 @@ export function InteractiveSimulator() {
 
   return (
     <section id="simulador" className="py-14 sm:py-20 md:py-28 relative overflow-hidden bg-muted/30">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
+      {/* Background radial glow - optimized for mobile GPU */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] sm:w-[500px] h-[320px] sm:h-[500px] bg-primary/10 rounded-full blur-2xl sm:blur-3xl pointer-events-none gpu-layer" />
 
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">

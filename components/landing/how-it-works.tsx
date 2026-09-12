@@ -1,11 +1,36 @@
 "use client"
 
+import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Smartphone, QrCode, Volume2, ArrowRight, Download, HelpCircle } from "lucide-react"
+import { Smartphone, QrCode, Volume2, Download, HelpCircle } from "lucide-react"
 
 export function HowItWorks() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || !("IntersectionObserver" in window)) {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const steps = [
     {
       step: "01",
@@ -31,9 +56,11 @@ export function HowItWorks() {
   ]
 
   return (
-    <section id="como-funciona" className="py-14 sm:py-20 md:py-28 relative">
+    <section id="como-funciona" ref={containerRef} className="py-14 sm:py-20 md:py-28 relative">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+        <div className={`text-center max-w-2xl mx-auto mb-10 sm:mb-16 transition-all duration-500 ${
+          inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}>
           <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 bg-primary/10 text-primary font-semibold text-xs">
             Puesta en Marcha Rápida
           </Badge>
@@ -52,10 +79,13 @@ export function HowItWorks() {
         <div className="grid md:grid-cols-3 gap-5 sm:gap-8 relative">
           {steps.map((item, index) => {
             const Icon = item.icon
+            const delays = ["delay-75", "delay-150", "delay-200"]
             return (
               <div
                 key={item.step}
-                className="relative rounded-2xl sm:rounded-3xl border border-border/70 bg-card p-5 sm:p-8 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-300 flex flex-col justify-between group"
+                className={`relative rounded-2xl sm:rounded-3xl border border-border/70 bg-card p-5 sm:p-8 shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 flex flex-col justify-between group gpu-layer ${
+                  delays[index]
+                } ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
               >
                 {/* Step number badge */}
                 <div className="flex items-center justify-between mb-4 sm:mb-6">

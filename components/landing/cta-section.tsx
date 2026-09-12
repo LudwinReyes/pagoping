@@ -10,8 +10,8 @@ export function CTASection() {
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="relative rounded-2xl sm:rounded-[2.5rem] overflow-hidden p-6 sm:p-12 md:p-16 border border-primary/30 bg-gradient-to-tr from-purple-950/90 via-primary/30 to-indigo-950/80 text-white shadow-2xl shadow-primary/20 text-center">
           {/* Decorative ambient blurred blobs */}
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-500/30 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-indigo-500/30 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 left-1/4 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500/25 rounded-full blur-2xl sm:blur-3xl pointer-events-none gpu-layer" />
+          <div className="absolute bottom-0 right-1/4 w-48 sm:w-72 h-48 sm:h-72 bg-indigo-500/25 rounded-full blur-2xl sm:blur-3xl pointer-events-none gpu-layer" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-purple-200 text-xs font-semibold mb-4 sm:mb-6">

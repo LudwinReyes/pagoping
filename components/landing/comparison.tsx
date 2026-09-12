@@ -1,14 +1,41 @@
 "use client"
 
+import { useRef, useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { XCircle, CheckCircle2, AlertOctagon, Sparkles, ArrowRight } from "lucide-react"
+import { XCircle, CheckCircle2, AlertOctagon, Sparkles } from "lucide-react"
 
 export function Comparison() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || !("IntersectionObserver" in window)) {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section className="py-14 sm:py-20 md:py-28 relative overflow-hidden">
+    <section ref={containerRef} className="py-14 sm:py-20 md:py-28 relative overflow-hidden">
       <div className="container mx-auto px-4 max-w-5xl">
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+        <div className={`text-center max-w-2xl mx-auto mb-10 sm:mb-16 transition-all duration-500 ${
+          inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}>
           <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 bg-primary/10 text-primary font-semibold text-xs">
             Comparativa Real en Mostrador
           </Badge>
@@ -25,7 +52,9 @@ export function Comparison() {
 
         <div className="grid md:grid-cols-2 gap-5 sm:gap-8 items-stretch">
           {/* Card: Sin PagoPing */}
-          <Card className="border-rose-500/30 bg-rose-950/5 dark:bg-rose-950/10 shadow-lg relative overflow-hidden flex flex-col justify-between rounded-2xl sm:rounded-3xl">
+          <Card className={`border-rose-500/30 bg-rose-950/5 dark:bg-rose-950/10 shadow-lg relative overflow-hidden flex flex-col justify-between rounded-2xl sm:rounded-3xl transition-all duration-500 delay-75 gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
             <div className="absolute top-0 left-0 w-full h-1 bg-rose-500/80" />
             <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
@@ -71,7 +100,9 @@ export function Comparison() {
           </Card>
 
           {/* Card: Con PagoPing */}
-          <Card className="border-emerald-500/40 bg-emerald-950/5 dark:bg-emerald-950/10 shadow-xl relative overflow-hidden flex flex-col justify-between rounded-2xl sm:rounded-3xl">
+          <Card className={`border-emerald-500/40 bg-emerald-950/5 dark:bg-emerald-950/10 shadow-xl relative overflow-hidden flex flex-col justify-between rounded-2xl sm:rounded-3xl transition-all duration-500 delay-150 gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
             <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500" />
             <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">

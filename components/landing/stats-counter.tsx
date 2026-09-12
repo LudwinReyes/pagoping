@@ -1,7 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
-import { useGSAP } from "@gsap/react"
+import { useRef, useEffect, useState } from "react"
 import gsap from "gsap"
 import { Badge } from "@/components/ui/badge"
 import { Store, Utensils, Wrench, Shirt, Wine, ShoppingBag } from "lucide-react"
@@ -12,59 +11,82 @@ export function StatsCounter() {
   const count2Ref = useRef<HTMLSpanElement>(null)
   const count3Ref = useRef<HTMLSpanElement>(null)
   const count4Ref = useRef<HTMLSpanElement>(null)
+  const [inView, setInView] = useState(false)
 
-  useGSAP(
-    () => {
-      // Counter animation
-      const obj1 = { val: 0 }
-      gsap.to(obj1, {
-        val: 25000,
-        duration: 2.2,
-        ease: "power2.out",
-        onUpdate: () => {
-          if (count1Ref.current) {
-            count1Ref.current.innerText = "+" + Math.floor(obj1.val).toLocaleString("es-PE")
-          }
-        },
-      })
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
 
-      const obj2 = { val: 0 }
-      gsap.to(obj2, {
-        val: 99.9,
-        duration: 2.5,
-        ease: "power2.out",
-        onUpdate: () => {
-          if (count2Ref.current) {
-            count2Ref.current.innerText = obj2.val.toFixed(1) + "%"
-          }
-        },
-      })
+    if (!("IntersectionObserver" in window)) {
+      setInView(true)
+      return
+    }
 
-      const obj3 = { val: 0 }
-      gsap.to(obj3, {
-        val: 0.2,
-        duration: 2,
-        ease: "power2.out",
-        onUpdate: () => {
-          if (count3Ref.current) {
-            count3Ref.current.innerText = "< " + obj3.val.toFixed(1) + "s"
-          }
-        },
-      })
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.15 }
+    )
 
-      const obj4 = { val: 0 }
-      gsap.to(obj4, {
-        val: 0,
-        duration: 1.5,
-        onUpdate: () => {
-          if (count4Ref.current) {
-            count4Ref.current.innerText = "S/ " + Math.floor(obj4.val)
-          }
-        },
-      })
-    },
-    { scope: containerRef }
-  )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!inView) return
+
+    // Counter animation runs smoothly when user scrolls into view
+    const obj1 = { val: 0 }
+    gsap.to(obj1, {
+      val: 25000,
+      duration: 1.8,
+      ease: "power2.out",
+      onUpdate: () => {
+        if (count1Ref.current) {
+          count1Ref.current.innerText = "+" + Math.floor(obj1.val).toLocaleString("es-PE")
+        }
+      },
+    })
+
+    const obj2 = { val: 0 }
+    gsap.to(obj2, {
+      val: 99.9,
+      duration: 2,
+      ease: "power2.out",
+      onUpdate: () => {
+        if (count2Ref.current) {
+          count2Ref.current.innerText = obj2.val.toFixed(1) + "%"
+        }
+      },
+    })
+
+    const obj3 = { val: 0 }
+    gsap.to(obj3, {
+      val: 0.2,
+      duration: 1.6,
+      ease: "power2.out",
+      onUpdate: () => {
+        if (count3Ref.current) {
+          count3Ref.current.innerText = "< " + obj3.val.toFixed(1) + "s"
+        }
+      },
+    })
+
+    const obj4 = { val: 0 }
+    gsap.to(obj4, {
+      val: 0,
+      duration: 1,
+      onUpdate: () => {
+        if (count4Ref.current) {
+          count4Ref.current.innerText = "S/ " + Math.floor(obj4.val)
+        }
+      },
+    })
+  }, [inView])
 
   const businessTypes = [
     { icon: Store, name: "Bodegas y Minimarkets" },

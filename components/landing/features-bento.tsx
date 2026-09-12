@@ -1,8 +1,6 @@
 "use client"
 
-import { useRef } from "react"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
+import { useRef, useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -11,19 +9,41 @@ import {
   Smartphone,
   FileSpreadsheet,
   Lock,
-  Zap,
   CheckCircle,
   Radio,
-  ArrowUpRight
 } from "lucide-react"
 
 export function FeaturesBento() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || !("IntersectionObserver" in window)) {
+      setInView(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setInView(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.08 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <section id="caracteristicas" ref={containerRef} className="py-14 sm:py-20 md:py-28 relative">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+        <div className={`text-center max-w-2xl mx-auto mb-10 sm:mb-16 transition-all duration-500 ${
+          inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}>
           <Badge variant="outline" className="mb-3 px-3 py-1 border-primary/30 bg-primary/10 text-primary font-semibold text-xs">
             Tecnología Diseñada para Comercios
           </Badge>
@@ -38,11 +58,13 @@ export function FeaturesBento() {
           </p>
         </div>
 
-        {/* Bento Grid */}
+        {/* Bento Grid with GPU-accelerated scroll reveal */}
         <div className="grid md:grid-cols-3 gap-5 sm:gap-6">
           {/* Bento Item 1 (Wide): Voice TTS */}
-          <Card className="md:col-span-2 relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-primary/5 hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl group">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
+          <Card className={`md:col-span-2 relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-primary/5 hover:border-primary/50 transition-all duration-500 shadow-sm hover:shadow-xl group gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
+            <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-primary/10 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/20 transition-all gpu-layer" />
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary shadow-inner">
@@ -79,8 +101,10 @@ export function FeaturesBento() {
           </Card>
 
           {/* Bento Item 2: Anti Fraud Shield */}
-          <Card className="relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-emerald-500/5 hover:border-emerald-500/50 transition-all duration-300 shadow-sm hover:shadow-xl group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
+          <Card className={`relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-emerald-500/5 hover:border-emerald-500/50 transition-all duration-500 delay-100 shadow-sm hover:shadow-xl group gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
+            <div className="absolute top-0 right-0 w-36 sm:w-48 h-36 sm:h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all gpu-layer" />
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shadow-inner">
@@ -116,8 +140,10 @@ export function FeaturesBento() {
           </Card>
 
           {/* Bento Item 3: Multi-device */}
-          <Card className="relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-blue-500/5 hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-blue-500/20 transition-all" />
+          <Card className={`relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-blue-500/5 hover:border-blue-500/50 transition-all duration-500 delay-150 shadow-sm hover:shadow-xl group gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
+            <div className="absolute top-0 right-0 w-36 sm:w-48 h-36 sm:h-48 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/20 transition-all gpu-layer" />
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-500 shadow-inner">
@@ -143,8 +169,10 @@ export function FeaturesBento() {
           </Card>
 
           {/* Bento Item 4: Excel & Reports */}
-          <Card className="relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-amber-500/5 hover:border-amber-500/50 transition-all duration-300 shadow-sm hover:shadow-xl group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/20 transition-all" />
+          <Card className={`relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-amber-500/5 hover:border-amber-500/50 transition-all duration-500 delay-200 shadow-sm hover:shadow-xl group gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
+            <div className="absolute top-0 right-0 w-36 sm:w-48 h-36 sm:h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all gpu-layer" />
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-500 shadow-inner">
@@ -170,8 +198,10 @@ export function FeaturesBento() {
           </Card>
 
           {/* Bento Item 5: Privacy & Security */}
-          <Card className="relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-purple-500/5 hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl group">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/20 transition-all" />
+          <Card className={`relative overflow-hidden border-border/80 bg-gradient-to-br from-card via-card to-purple-500/5 hover:border-primary/50 transition-all duration-500 delay-250 shadow-sm hover:shadow-xl group gpu-layer ${
+            inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}>
+            <div className="absolute top-0 right-0 w-36 sm:w-48 h-36 sm:h-48 bg-primary/10 rounded-full blur-2xl pointer-events-none group-hover:bg-primary/20 transition-all gpu-layer" />
             <CardHeader className="p-4 sm:p-6 pb-3 sm:pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-purple-500/15 text-primary shadow-inner">

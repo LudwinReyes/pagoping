@@ -32,88 +32,61 @@ export function Hero() {
 
   useGSAP(
     () => {
-      // Intro timeline
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
+      // Intro timeline using fromTo with clearProps: "all" for resilient rendering on iOS WebKit
+      const tl = gsap.timeline({ defaults: { ease: "power2.out" } })
 
-      tl.from(heroBadgeRef.current, {
-        y: -30,
-        opacity: 0,
-        duration: 0.8,
-      })
-        .from(
+      if (heroBadgeRef.current) {
+        tl.fromTo(
+          heroBadgeRef.current,
+          { y: -20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, clearProps: "all" }
+        )
+      }
+
+      if (headingRef.current) {
+        tl.fromTo(
           headingRef.current,
-          {
-            y: 40,
-            opacity: 0,
-            duration: 1,
-          },
-          "-=0.5"
-        )
-        .from(
-          paragraphRef.current,
-          {
-            y: 30,
-            opacity: 0,
-            duration: 0.8,
-          },
-          "-=0.6"
-        )
-        .from(
-          buttonsRef.current,
-          {
-            y: 20,
-            opacity: 0,
-            scale: 0.95,
-            duration: 0.7,
-          },
-          "-=0.5"
-        )
-        .from(
-          trustRef.current,
-          {
-            opacity: 0,
-            duration: 0.8,
-          },
+          { y: 25, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.7, clearProps: "all" },
           "-=0.4"
         )
-        .from(
-          phoneMockupRef.current,
-          {
-            y: 60,
-            opacity: 0,
-            scale: 0.9,
-            duration: 1.2,
-            ease: "back.out(1.4)",
-          },
-          "-=0.8"
+      }
+
+      if (paragraphRef.current) {
+        tl.fromTo(
+          paragraphRef.current,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, clearProps: "all" },
+          "-=0.4"
         )
+      }
 
-      // Continuous subtle floating animations for badges
-      gsap.to(floatingCard1Ref.current, {
-        y: -12,
-        duration: 2.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      })
+      if (buttonsRef.current) {
+        tl.fromTo(
+          buttonsRef.current,
+          { y: 15, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, clearProps: "all" },
+          "-=0.3"
+        )
+      }
 
-      gsap.to(floatingCard2Ref.current, {
-        y: 10,
-        duration: 3.4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 0.6,
-      })
+      if (trustRef.current) {
+        tl.fromTo(
+          trustRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.6, clearProps: "all" },
+          "-=0.3"
+        )
+      }
 
-      gsap.to(floatingCard3Ref.current, {
-        y: -8,
-        duration: 2.5,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: 1.2,
-      })
+      if (phoneMockupRef.current) {
+        tl.fromTo(
+          phoneMockupRef.current,
+          { y: 35, opacity: 0, scale: 0.96 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "power3.out", clearProps: "all" },
+          "-=0.4"
+        )
+      }
     },
     { scope: containerRef }
   )
@@ -123,11 +96,11 @@ export function Hero() {
       ref={containerRef}
       className="relative overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20 md:pt-20 md:pb-32"
     >
-      {/* Dynamic ambient lights / mesh glow */}
+      {/* Optimized GPU-friendly ambient lights */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[450px] bg-gradient-to-tr from-primary/25 via-purple-500/20 to-indigo-500/10 rounded-full blur-[130px] opacity-70 dark:opacity-40 animate-pulse" />
-        <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-emerald-500/15 rounded-full blur-[100px] opacity-50 dark:opacity-30" />
-        <div className="absolute bottom-10 left-10 w-[400px] h-[400px] bg-blue-500/15 rounded-full blur-[120px] opacity-50 dark:opacity-30" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[550px] h-[280px] sm:h-[400px] bg-gradient-to-tr from-primary/20 via-purple-500/15 to-indigo-500/10 rounded-full blur-2xl sm:blur-3xl opacity-60 dark:opacity-30 gpu-layer" />
+        <div className="hidden sm:block absolute top-1/3 right-10 w-[280px] h-[280px] bg-emerald-500/10 rounded-full blur-2xl sm:blur-3xl opacity-40 dark:opacity-20 gpu-layer" />
+        <div className="hidden sm:block absolute bottom-10 left-10 w-[280px] h-[280px] bg-blue-500/10 rounded-full blur-2xl sm:blur-3xl opacity-40 dark:opacity-20 gpu-layer" />
       </div>
 
       <div className="container mx-auto px-4 max-w-6xl">
@@ -381,21 +354,21 @@ export function Hero() {
           {/* Floating Pill 1 (Top Left) */}
           <div
             ref={floatingCard1Ref}
-            className="hidden sm:flex absolute -top-6 -left-6 items-center gap-2.5 rounded-2xl border border-emerald-500/30 bg-background/95 backdrop-blur-xl p-3 shadow-xl shadow-emerald-500/10"
+            className="flex absolute -top-3.5 sm:-top-6 -left-1 sm:-left-6 items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl border border-emerald-500/30 bg-background/95 backdrop-blur-md p-2 sm:p-3 shadow-xl shadow-emerald-500/10 scale-90 sm:scale-100 origin-top-left animate-float-1 gpu-layer z-20"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-500">
-              <Zap className="h-5 w-5" />
+            <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/20 text-emerald-500">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">0.2 segundos</p>
-              <p className="text-[10px] text-muted-foreground">Detección ultrarrápida</p>
+              <p className="text-[11px] sm:text-xs font-bold text-foreground">0.2 segundos</p>
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground">Detección instantánea</p>
             </div>
           </div>
 
-          {/* Floating Pill 2 (Top Right) */}
+          {/* Floating Pill 2 (Top Right - Desktop) */}
           <div
             ref={floatingCard2Ref}
-            className="hidden sm:flex absolute -top-5 -right-6 items-center gap-2.5 rounded-2xl border border-purple-500/30 bg-background/95 backdrop-blur-xl p-3 shadow-xl shadow-purple-500/10"
+            className="hidden md:flex absolute -top-5 -right-6 items-center gap-2.5 rounded-2xl border border-purple-500/30 bg-background/95 backdrop-blur-md p-3 shadow-xl shadow-purple-500/10 animate-float-2 gpu-layer z-20"
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/20 text-primary">
               <Volume2 className="h-5 w-5" />
@@ -406,17 +379,17 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Floating Pill 3 (Bottom Left) */}
+          {/* Floating Pill 3 (Bottom Right on mobile / Bottom Left on desktop) */}
           <div
             ref={floatingCard3Ref}
-            className="hidden sm:flex absolute -bottom-6 -left-4 items-center gap-2.5 rounded-2xl border border-blue-500/30 bg-background/95 backdrop-blur-xl p-3 shadow-xl shadow-blue-500/10"
+            className="flex absolute -bottom-3.5 sm:-bottom-6 -right-1 sm:right-auto sm:-left-4 items-center gap-2 sm:gap-2.5 rounded-xl sm:rounded-2xl border border-blue-500/30 bg-background/95 backdrop-blur-md p-2 sm:p-3 shadow-xl shadow-blue-500/10 scale-90 sm:scale-100 origin-bottom-right sm:origin-bottom-left animate-float-2 gpu-layer z-20"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/20 text-blue-500">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-blue-500/20 text-blue-500">
+              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">Anti-Capturas Falsas</p>
-              <p className="text-[10px] text-muted-foreground">Verificación de OP real</p>
+              <p className="text-[11px] sm:text-xs font-bold text-foreground">Anti-Estafas</p>
+              <p className="text-[9px] sm:text-[10px] text-muted-foreground">Valida OP real</p>
             </div>
           </div>
         </div>

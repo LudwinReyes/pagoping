@@ -43,10 +43,10 @@ export function Pricing() {
     {
       name: "Básico",
       desc: "Para bodegas o tiendas pequeñas con 1 punto de venta.",
-      price: isAnnual ? "S/ 11.25" : "S/ 15",
+      price: isAnnual ? "S/ 13" : "S/ 15",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: false,
-      badge: isAnnual ? "Ahorras 25%" : null,
+      badge: isAnnual ? "Ahorras 13%" : null,
       features: [
         "Validaciones ILIMITADAS",
         "1 dispositivo conectado",
@@ -60,7 +60,7 @@ export function Pricing() {
     {
       name: "Negocio",
       desc: "El más elegido por restaurantes, pollerías y minimarkets.",
-      price: isAnnual ? "S/ 22.50" : "S/ 30",
+      price: isAnnual ? "S/ 25" : "S/ 30",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: true,
       badge: "MÁS POPULAR",
@@ -78,7 +78,7 @@ export function Pricing() {
     {
       name: "Empresa",
       desc: "Para cadenas de locales o franquicias con alto volumen.",
-      price: isAnnual ? "S/ 45" : "S/ 60",
+      price: isAnnual ? "S/ 50" : "S/ 60",
       period: isAnnual ? "/ mes (pago anual)" : "/ mes",
       highlighted: false,
       badge: "ALTO VOLUMEN",
@@ -135,7 +135,7 @@ export function Pricing() {
             >
               <span>Pago Anual</span>
               <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] bg-emerald-500 text-white font-bold tracking-tight">
-                -25%
+                Ahorro Anual
               </span>
             </button>
           </div>

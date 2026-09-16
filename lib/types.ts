@@ -97,3 +97,31 @@ export const PLAN_CONFIG = {
     duration: 365,
   },
 } as const
+
+export interface SubscriptionOrder {
+  id: string
+  user_id: string
+  user_email: string
+  plan_tier: "basic" | "business" | "enterprise"
+  billing_cycle: "monthly" | "annual"
+  amount: number
+  status: "pending" | "completed" | "expired" | "cancelled"
+  operation_code?: string
+  sender_name?: string
+  payment_id?: string
+  created_at: string
+  expires_at: string
+  completed_at?: string
+}
+
+export interface GatewayConfig {
+  admin_yape_name: string
+  admin_yape_phone: string
+  admin_yape_email: string
+  admin_qr_url: string
+  plans: {
+    basic: { monthly: number; annual: number; name: string }
+    business: { monthly: number; annual: number; name: string }
+    enterprise: { monthly: number; annual: number; name: string }
+  }
+}

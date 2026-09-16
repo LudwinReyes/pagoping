@@ -31,11 +31,14 @@ import {
   CheckCircle2,
   XCircle,
   Sparkles,
+  QrCode,
+  Receipt,
 } from "lucide-react"
 import { format, addDays } from "date-fns"
 import { es } from "date-fns/locale"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Logo } from "@/components/logo"
+import { AdminGatewayManager } from "@/components/admin-gateway-manager"
 
 interface SubscriptionWithDevices extends Subscription {
   collaboratorCount?: number
@@ -48,6 +51,7 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const [activeTab, setActiveTab] = useState<"clients" | "gateway">("clients")
   const [selectedUser, setSelectedUser] = useState<SubscriptionWithDevices | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newPlan, setNewPlan] = useState<PlanTier>("free")
@@ -394,8 +398,43 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
           <p className="text-xs sm:text-sm text-slate-500 mt-1">Monitorea y gestiona las suscripciones de tus clientes en tiempo real.</p>
         </div>
 
-        {/* Stats Cards - Responsive Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("clients")}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+              activeTab === "clients"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Clientes & Suscripciones
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("gateway")}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+              activeTab === "gateway"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
+            <QrCode className="w-4 h-4" />
+            Pasarela Yape
+            <Badge variant="secondary" className="ml-1 text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300">
+              Auto-activación
+            </Badge>
+          </button>
+        </div>
+
+        {activeTab === "gateway" ? (
+          <AdminGatewayManager />
+        ) : (
+          <>
+            {/* Stats Cards - Responsive Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* Total Clients */}
           <Card className="border-0 shadow-sm bg-white dark:bg-slate-800">
             <CardContent className="p-4 sm:p-5">
@@ -642,7 +681,9 @@ export function AdminDashboard({ subscriptions, adminEmail }: AdminDashboardProp
             </div>
           </CardContent>
         </Card>
-      </main>
+      </>
+    )}
+  </main>
 
       {/* Edit Modal - New Design */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

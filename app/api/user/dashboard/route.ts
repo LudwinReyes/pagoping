@@ -66,7 +66,7 @@ export async function GET(request: Request) {
       ? {
           ...sub,
           inbound_email_address: sub.inbound_email_slug
-            ? `cobros-${sub.inbound_email_slug}@inbound.pagoping.app`
+            ? `cobros-${sub.inbound_email_slug}@inbound.tunkitek.lat`
             : null,
         }
       : null

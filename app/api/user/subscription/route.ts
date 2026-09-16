@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       ? {
           ...subscription,
           inbound_email_address: subscription.inbound_email_slug
-            ? `cobros-${subscription.inbound_email_slug}@inbound.pagoping.app`
+            ? `cobros-${subscription.inbound_email_slug}@inbound.tunkitek.lat`
             : null,
         }
       : null

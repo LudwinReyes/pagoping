@@ -54,8 +54,8 @@ export function CaptureChannelModal({
   const emailAddress =
     inboundEmailAddress ||
     (inboundEmailSlug
-      ? `cobros-${inboundEmailSlug}@inbound.pagoping.app`
-      : "cobros-...@inbound.pagoping.app")
+      ? `cobros-${inboundEmailSlug}@inbound.tunkitek.lat`
+      : "cobros-...@inbound.tunkitek.lat")
 
   const handleCopyEmail = async () => {
     try {

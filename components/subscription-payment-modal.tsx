@@ -385,6 +385,9 @@ export function SubscriptionPaymentModal({
                 {gatewayConfig?.admin_qr_url ? (
                   <img
                     src={gatewayConfig.admin_qr_url}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/api/gateway/qr-image"
+                    }}
                     alt="QR Yape PagoPing"
                     className="w-full h-full object-contain rounded-lg"
                   />

@@ -46,7 +46,7 @@ export function AdminGatewayManager() {
         setName(data.settings.admin_yape_name || "")
         setPhone(data.settings.admin_yape_phone || "")
         setEmail(data.settings.admin_yape_email || "")
-        setPreviewUrl(data.settings.admin_qr_url || null)
+        setPreviewUrl(data.settings.admin_qr_url || "/api/gateway/qr-image")
       }
     } catch (err) {
       console.error("Error fetching gateway settings:", err)
@@ -272,6 +272,7 @@ export function AdminGatewayManager() {
                 <img
                   src={previewUrl}
                   alt="QR Yape Admin"
+                  onError={() => setPreviewUrl("/api/gateway/qr-image")}
                   className="w-full h-full object-contain rounded-xl"
                 />
               ) : (

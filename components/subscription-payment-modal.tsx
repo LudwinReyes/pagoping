@@ -55,6 +55,7 @@ export function SubscriptionPaymentModal({
   const [verifyError, setVerifyError] = useState<string | null>(null)
   const [successData, setSuccessData] = useState<{ planName: string; newEndsAt: string } | null>(null)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [yapeSenderName, setYapeSenderName] = useState("")
 
   // Load gateway config on mount
   useEffect(() => {
@@ -81,10 +82,11 @@ export function SubscriptionPaymentModal({
       setIsAnnual(initialAnnual)
       setOrder(null)
       setOperationCode("")
+      setYapeSenderName(userEmail ? userEmail.split("@")[0].replace(/[._]/g, " ") : "")
       setVerifyError(null)
       setSuccessData(null)
     }
-  }, [isOpen, initialPlanTier, initialAnnual])
+  }, [isOpen, initialPlanTier, initialAnnual, userEmail])
 
   // Listen to Supabase Realtime for order completion
   useEffect(() => {
@@ -161,6 +163,7 @@ export function SubscriptionPaymentModal({
         body: JSON.stringify({
           planTier: selectedTier,
           billingCycle: isAnnual ? "annual" : "monthly",
+          yapeSenderName: yapeSenderName.trim(),
         }),
       })
 
@@ -323,6 +326,27 @@ export function SubscriptionPaymentModal({
               })}
             </div>
 
+            {/* Input del Titular de la cuenta Yape */}
+            <div className="space-y-1.5 p-3.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/20 border border-purple-200/70 dark:border-purple-900/40">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground">
+                  ¿A nombre de quién está tu cuenta de Yape?
+                </label>
+                <Badge variant="outline" className="text-[10px] text-purple-600 dark:text-purple-400 border-purple-200 bg-white/70 dark:bg-slate-900/50">
+                  Auto-activación
+                </Badge>
+              </div>
+              <Input
+                value={yapeSenderName}
+                onChange={(e) => setYapeSenderName(e.target.value)}
+                placeholder="Ej. Juan Pérez"
+                className="bg-white dark:bg-slate-900 text-sm h-10 rounded-lg"
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Coloca tu nombre tal como aparece en tu Yape para que el sistema reconozca tu abono de inmediato al transferir.
+              </p>
+            </div>
+
             {verifyError && (
               <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -378,6 +402,16 @@ export function SubscriptionPaymentModal({
                 Radar PagoPing Activo
               </div>
             </div>
+
+            {order.sender_name && (
+              <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 text-xs">
+                <span className="text-muted-foreground">Reconociendo Yape de:</span>
+                <span className="font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
+                  {order.sender_name}
+                </span>
+              </div>
+            )}
 
             {/* Imagen del QR y Datos de Yape */}
             <div className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border/50">

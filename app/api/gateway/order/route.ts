@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { planTier, billingCycle } = body
+    const { planTier, billingCycle, yapeSenderName } = body
 
     if (!["basic", "business", "enterprise"].includes(planTier)) {
       return NextResponse.json({ error: "Plan seleccionado no válido" }, { status: 400 })
@@ -46,6 +46,7 @@ export async function POST(request: Request) {
         plan_tier: planTier,
         billing_cycle: billingCycle,
         amount,
+        sender_name: yapeSenderName ? yapeSenderName.trim() : null,
         status: "pending",
       })
       .select()

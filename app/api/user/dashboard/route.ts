@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     const [subscriptionResult, todayResult, recentResult, devicesResult, collaboratorsResult] = await Promise.all([
       auth.supabase
         .from("subscriptions")
-        .select("user_id,email,tier,billing_period,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
+        .select("user_id,email,tier,billing_period,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number,capture_channel,inbound_email_slug")
         .eq("user_id", userId)
         .maybeSingle(),
       auth.supabase
@@ -61,9 +61,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "No se pudo cargar el panel" }, { status: 500 })
     }
 
+    const sub = subscriptionResult.data
+    const formattedSubscription = sub
+      ? {
+          ...sub,
+          inbound_email_address: sub.inbound_email_slug
+            ? `cobros-${sub.inbound_email_slug}@inbound.pagoping.app`
+            : null,
+        }
+      : null
+
     return NextResponse.json(
       {
-        subscription: subscriptionResult.data,
+        subscription: formattedSubscription,
         todayPayments: todayResult.data || [],
         recentPayments: recentResult.data || [],
         devices: devicesResult.data || [],

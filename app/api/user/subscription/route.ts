@@ -8,13 +8,22 @@ export async function GET(request: Request) {
 
     const { data: subscription, error } = await auth.supabase
       .from("subscriptions")
-      .select("user_id,email,tier,billing_period,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number")
+      .select("user_id,email,tier,billing_period,starts_at,ends_at,validations_count,max_validations,max_devices,can_export,is_active,created_at,business_name,owner_name,display_name,phone_number,capture_channel,inbound_email_slug")
       .eq("user_id", auth.user.id)
       .maybeSingle()
 
     if (error) throw error
 
-    return NextResponse.json({ subscription })
+    const formattedSubscription = subscription
+      ? {
+          ...subscription,
+          inbound_email_address: subscription.inbound_email_slug
+            ? `cobros-${subscription.inbound_email_slug}@inbound.pagoping.app`
+            : null,
+        }
+      : null
+
+    return NextResponse.json({ subscription: formattedSubscription })
   } catch (error) {
     console.error("[v0] API - Error getting subscription:", error)
     return NextResponse.json({ error: "Error interno" }, { status: 500 })

@@ -34,6 +34,7 @@ import {
   TrendingUp,
   Users,
   Sparkles,
+  Mail,
 } from "lucide-react"
 import { format, formatDistanceToNow } from "date-fns"
 import { es } from "date-fns/locale"
@@ -42,6 +43,7 @@ import { Logo } from "@/components/logo"
 import { PWAInstallBanner } from "@/components/pwa-install-banner"
 import { CollaboratorsManager } from "@/components/collaborators-manager"
 import { SubscriptionPaymentModal } from "@/components/subscription-payment-modal"
+import { CaptureChannelModal } from "@/components/capture-channel-modal"
 
 interface ClientDashboardProps {
   subscription: Subscription | null
@@ -68,10 +70,20 @@ export function ClientDashboard({
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [devicesModalOpen, setDevicesModalOpen] = useState(false)
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+  const [captureChannelModalOpen, setCaptureChannelModalOpen] = useState(false)
+  const [currentChannel, setCurrentChannel] = useState<"android_notification" | "email">(
+    subscription?.capture_channel || "android_notification"
+  )
   const [removedDeviceIds, setRemovedDeviceIds] = useState<string[]>([])
   const [isDeletingDevice, setIsDeletingDevice] = useState<string | null>(null)
   const [selectedAction, setSelectedAction] = useState<string | null>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    if (subscription?.capture_channel) {
+      setCurrentChannel(subscription.capture_channel)
+    }
+  }, [subscription?.capture_channel])
   const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null)
   const currentDevices = devices.filter((device) => !removedDeviceIds.includes(device.device_id))
 
@@ -289,7 +301,26 @@ export function ClientDashboard({
         {/* Welcome Section with Vencimiento Badge */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">¡Hola, {businessDisplayName}!</h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">¡Hola, {businessDisplayName}!</h1>
+              <button
+                onClick={() => setCaptureChannelModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all border hover:shadow-xs cursor-pointer border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100"
+                title="Haz clic para configurar el canal de recepción"
+              >
+                {currentChannel === "email" ? (
+                  <>
+                    <Mail className="h-3 w-3 text-purple-600" />
+                    <span>Canal: Correo (iOS)</span>
+                  </>
+                ) : (
+                  <>
+                    <Smartphone className="h-3 w-3 text-purple-600" />
+                    <span>Canal: Android</span>
+                  </>
+                )}
+              </button>
+            </div>
             <p className="text-xs sm:text-sm text-muted-foreground">Aquí tienes el resumen de tu negocio hoy.</p>
           </div>
 
@@ -375,7 +406,36 @@ export function ClientDashboard({
         </Card>
 
         {/* Botones de acción - Card Style */}
-        <div id="acciones-rapidas" className={`grid gap-3 sm:gap-4 ${isBusiness ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2"}`}>
+        <div id="acciones-rapidas" className={`grid gap-3 sm:gap-4 grid-cols-2 ${isBusiness ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3"}`}>
+          {/* Canal de Recepción */}
+          <button
+            onClick={() => {
+              setSelectedAction('capture-channel')
+              setCaptureChannelModalOpen(true)
+            }}
+            className={`relative p-3.5 sm:p-5 md:p-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center gap-2 sm:gap-3 group
+              ${selectedAction === 'capture-channel' || captureChannelModalOpen
+                ? 'border-purple-500 bg-purple-500 shadow-lg shadow-purple-200 dark:shadow-purple-900/30 scale-[1.02]'
+                : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-purple-300 hover:shadow-md'}`}
+          >
+            {(selectedAction === 'capture-channel' || captureChannelModalOpen) && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-purple-400 border-2 border-white"></div>
+            )}
+            <div className={`p-2.5 sm:p-3 rounded-xl transition-all duration-300 ${selectedAction === 'capture-channel' || captureChannelModalOpen ? 'bg-white/20' : 'bg-purple-100 dark:bg-purple-900/50'}`}>
+              {currentChannel === 'email' ? (
+                <Mail className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedAction === 'capture-channel' || captureChannelModalOpen ? 'text-white' : 'text-purple-600 dark:text-purple-400'}`} />
+              ) : (
+                <Smartphone className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${selectedAction === 'capture-channel' || captureChannelModalOpen ? 'text-white' : 'text-purple-600 dark:text-purple-400'}`} />
+              )}
+            </div>
+            <span className={`text-xs sm:text-sm font-medium text-center transition-colors ${selectedAction === 'capture-channel' || captureChannelModalOpen ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+              Canal de Cobro
+            </span>
+            <span className={`text-[11px] sm:text-xs text-center transition-colors ${selectedAction === 'capture-channel' || captureChannelModalOpen ? 'text-purple-200' : 'text-purple-600 dark:text-purple-400'}`}>
+              {currentChannel === 'email' ? '✉️ Correo (iOS)' : '📱 Android'}
+            </span>
+          </button>
+
           {/* Exportar Excel */}
           <button
             onClick={() => { setSelectedAction('export'); handleExport(); setTimeout(() => setSelectedAction(null), 300); }}
@@ -575,6 +635,25 @@ export function ClientDashboard({
         onClose={() => setPaymentModalOpen(false)}
         userEmail={userEmail}
         onPaymentSuccess={handleRefresh}
+      />
+
+      {/* Modal de Canal de Recepción (iPhone / Correo BCP / Android) */}
+      <CaptureChannelModal
+        open={captureChannelModalOpen}
+        onOpenChange={(open) => {
+          setCaptureChannelModalOpen(open)
+          if (!open) setSelectedAction(null)
+        }}
+        currentChannel={currentChannel}
+        inboundEmailSlug={subscription?.inbound_email_slug}
+        inboundEmailAddress={subscription?.inbound_email_address}
+        isExpired={Boolean(isExpired)}
+        onChannelChanged={(newChannel) => {
+          setCurrentChannel(newChannel)
+          if (subscription) {
+            subscription.capture_channel = newChannel
+          }
+        }}
       />
     </div>
   )

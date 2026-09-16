@@ -18,6 +18,9 @@ export interface Subscription {
   owner_name?: string
   display_name?: string
   phone_number?: string
+  capture_channel?: "android_notification" | "email"
+  inbound_email_slug?: string | null
+  inbound_email_address?: string | null
 }
 
 export interface Payment {

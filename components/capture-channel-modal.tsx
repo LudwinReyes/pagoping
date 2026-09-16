@@ -187,8 +187,8 @@ export function CaptureChannelModal({
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Lee las alertas de la app en segundo plano. Ideal para <strong>micropagos (S/ 0.10 a más)</strong> y tiendas con cobros pequeños frecuentes. Requiere Yape en Android.
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                    Desde S/ 0.10 (micropagos). Lee alertas en segundo plano cuando tu Yape está en un celular Android.
                   </p>
                 </div>
               </div>
@@ -250,8 +250,8 @@ export function CaptureChannelModal({
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    Reenvía las constancias oficiales de BCP en tiempo real. No necesitas un teléfono Android encendido. Válido para cobros de <strong>S/ 10.00 en adelante</strong>.
+                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                    Para pagos de S/ 10.00 a más y transferencias BCP. Procesa constancias en tiempo real sin celular Android.
                   </p>
                 </div>
               </div>

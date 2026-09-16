@@ -48,20 +48,31 @@ export function CaptureChannelModal({
   )
   const [isSaving, setIsSaving] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [copiedBcp, setCopiedBcp] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const emailAddress =
     inboundEmailAddress ||
     (inboundEmailSlug
-      ? `cobros-${inboundEmailSlug}@inbound.tunkitek.lat`
-      : "cobros-...@inbound.tunkitek.lat")
+      ? `cobros-${inboundEmailSlug}@tunkitek.lat`
+      : "cobros-...@tunkitek.lat")
 
   const handleCopyEmail = async () => {
     try {
       await navigator.clipboard.writeText(emailAddress)
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
+    } catch (err) {
+      console.error("Error al copiar al portapapeles:", err)
+    }
+  }
+
+  const handleCopyBcp = async () => {
+    try {
+      await navigator.clipboard.writeText("notificaciones@notificacionesbcp.com.pe")
+      setCopiedBcp(true)
+      setTimeout(() => setCopiedBcp(false), 2500)
     } catch (err) {
       console.error("Error al copiar al portapapeles:", err)
     }
@@ -135,7 +146,7 @@ export function CaptureChannelModal({
 
         <div className="space-y-3.5 mt-2">
           <p className="text-xs text-muted-foreground">
-            Solo un canal puede estar activo a la vez para evitar que un pago se lea doble.
+            Solo un canal puede estar activo a la vez para evitar que un pago se registre doble.
           </p>
 
           {/* Selector de Canales */}
@@ -160,18 +171,24 @@ export function CaptureChannelModal({
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
                       Notificaciones en Android
                     </p>
+                    <Badge
+                      variant="outline"
+                      className="border-emerald-300 text-emerald-700 dark:text-emerald-300 bg-emerald-100/60 dark:bg-emerald-900/40 text-[10px] font-semibold"
+                    >
+                      Desde S/ 0.10
+                    </Badge>
                     {selectedChannel === "android_notification" && (
                       <Badge className="bg-purple-600 text-white text-[10px] px-2 py-0">
                         Activo
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                    Lee las alertas en segundo plano cuando tu Yape está instalado en un celular Android.
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Lee las alertas de la app en segundo plano. Ideal para <strong>micropagos (S/ 0.10 a más)</strong> y tiendas con cobros pequeños frecuentes. Requiere Yape en Android.
                   </p>
                 </div>
               </div>
@@ -221,14 +238,20 @@ export function CaptureChannelModal({
                     >
                       Recomendado iPhone
                     </Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-amber-300 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 text-[10px] font-semibold"
+                    >
+                      Pagos ≥ S/ 10
+                    </Badge>
                     {selectedChannel === "email" && (
                       <Badge className="bg-purple-600 text-white text-[10px] px-2 py-0">
                         Activo
                       </Badge>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                    Reenvía las constancias de Yape/BCP en tiempo real. No necesitas un teléfono Android extra.
+                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                    Reenvía las constancias oficiales de BCP en tiempo real. No necesitas un teléfono Android encendido. Válido para cobros de <strong>S/ 10.00 en adelante</strong>.
                   </p>
                 </div>
               </div>
@@ -267,6 +290,20 @@ export function CaptureChannelModal({
                   </AlertDescription>
                 </Alert>
               )}
+
+              {/* Alerta explicativa sobre política de BCP (S/ 10) */}
+              <div className="rounded-2xl p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 text-xs space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-amber-900 dark:text-amber-200">
+                  <Info className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span>Aviso Importante: Monto mínimo de Yape por Correo</span>
+                </div>
+                <p className="leading-relaxed text-[11px] text-amber-800/90 dark:text-amber-300/90 pl-6">
+                  Por política bancaria del BCP, <strong>las constancias por correo de Yape solo se emiten para montos de S/ 10.00 en adelante</strong>. El banco no envía correos de confirmación para pagos menores (como S/ 1 o S/ 5).
+                </p>
+                <p className="leading-relaxed text-[11px] text-amber-800/90 dark:text-amber-300/90 pl-6">
+                  👉 <em>Si tu negocio recibe con frecuencia cobros de menos de S/ 10, te recomendamos cambiar al canal <strong>"Notificaciones en Android"</strong> para detectar cualquier monto desde S/ 0.10.</em>
+                </p>
+              </div>
 
               {/* Caja con la dirección de correo exclusiva */}
               <div className="rounded-2xl p-4 bg-gradient-to-br from-purple-50 to-indigo-50/50 dark:from-gray-800/80 dark:to-purple-950/20 border border-purple-200 dark:border-purple-800/60 space-y-2.5">
@@ -308,54 +345,95 @@ export function CaptureChannelModal({
                 </div>
               </div>
 
-              {/* Guía en 3 Pasos */}
+              {/* Guía en 3 Pasos sin fricción */}
               <div className="rounded-2xl p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 space-y-3">
-                <p className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                  <span>⚙️</span> ¿Cómo configurarlo en Gmail en 1 minuto?
-                </p>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <p className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                    <span>⚙️</span> Configuración en Gmail en 3 pasos rápidos
+                  </p>
+                  <a
+                    href="https://mail.google.com/mail/u/0/#settings/fwdandpop"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-600 hover:text-purple-700 dark:text-purple-400 hover:underline"
+                  >
+                    Abrir Ajustes de Gmail
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
 
-                <div className="space-y-2.5 text-xs text-gray-600 dark:text-gray-300">
+                <div className="space-y-3 text-xs text-gray-600 dark:text-gray-300">
+                  {/* Paso 1 */}
                   <div className="flex items-start gap-2.5">
                     <div className="h-5 w-5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
                       1
                     </div>
-                    <div>
+                    <div className="space-y-1.5 flex-1">
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        Añade tu dirección en Gmail
+                        Añade tu buzón de reenvío en Gmail
                       </p>
-                      <p className="text-muted-foreground text-[11px]">
-                        Abre Gmail en la PC ➔ <strong>Ajustes (⚙️)</strong> ➔ <strong>Ver todos los ajustes</strong> ➔ <strong>Reenvío y correo POP/IMAP</strong> ➔ <em>"Añadir dirección de reenvío"</em> y pega tu correo de arriba.
+                      <p className="text-muted-foreground text-[11px] leading-relaxed">
+                        En tu computadora entra a Gmail ➔ <strong>Ajustes (⚙️)</strong> ➔ <strong>Ver todos los ajustes</strong> ➔ pestaña <strong>Reenvío y correo POP/IMAP</strong> ➔ haz clic en <strong>"Añadir una dirección de reenvío"</strong> y pega tu correo exclusivo de arriba.
                       </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <div className="h-5 w-5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
-                      2
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-800 dark:text-gray-200">
-                        Crea el Filtro Automático
-                      </p>
-                      <p className="text-muted-foreground text-[11px]">
-                        Ve a <strong>Filtros y direcciones bloqueadas</strong> ➔ <strong>Crear un filtro nuevo</strong>:
-                      </p>
-                      <div className="mt-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-gray-900 border text-[11px] font-mono">
-                        De: <span className="text-purple-600 font-semibold">notificaciones@notificacionesbcp.com.pe</span>
+                      <div className="p-2.5 rounded-xl bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800/40 text-[11px] text-purple-900 dark:text-purple-200 flex items-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Confirmación automática:</strong> PagoPing aprueba el correo de confirmación de Google en menos de 5 segundos. No necesitas buscar ningún código: tras añadirlo, solo recarga la página de Gmail.
+                        </span>
                       </div>
                     </div>
                   </div>
 
+                  {/* Paso 2 */}
+                  <div className="flex items-start gap-2.5">
+                    <div className="h-5 w-5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                      2
+                    </div>
+                    <div className="space-y-1.5 flex-1">
+                      <p className="font-semibold text-gray-800 dark:text-gray-200">
+                        Crea el Filtro Automático
+                      </p>
+                      <p className="text-muted-foreground text-[11px] leading-relaxed">
+                        Ve a <strong>Filtros y direcciones bloqueadas</strong> ➔ haz clic en <strong>"Crear un filtro nuevo"</strong>. En la casilla <strong>"De"</strong> escribe el correo del BCP:
+                      </p>
+                      <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-white dark:bg-gray-900 border text-[11px] font-mono shadow-sm">
+                        <span className="text-purple-700 dark:text-purple-300 font-semibold truncate">
+                          notificaciones@notificacionesbcp.com.pe
+                        </span>
+                        <Button
+                          onClick={handleCopyBcp}
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2 text-[10px] font-semibold text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-950/50 shrink-0"
+                        >
+                          {copiedBcp ? (
+                            <>
+                              <Check className="h-3 w-3 mr-1 text-emerald-600" />
+                              <span className="text-emerald-600">Copiado</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3 mr-1" />
+                              Copiar
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paso 3 */}
                   <div className="flex items-start gap-2.5">
                     <div className="h-5 w-5 rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
                       3
                     </div>
-                    <div>
+                    <div className="space-y-1 flex-1">
                       <p className="font-semibold text-gray-800 dark:text-gray-200">
                         Activa el Reenvío
                       </p>
-                      <p className="text-muted-foreground text-[11px]">
-                        Marca la casilla ☑️ <strong>Reenviarlo a:</strong> y selecciona tu dirección de PagoPing. ¡Y listo!
+                      <p className="text-muted-foreground text-[11px] leading-relaxed">
+                        Haz clic en <strong>"Crear filtro"</strong>, marca la casilla ☑️ <strong>"Reenviarlo a:"</strong> y selecciona tu dirección de PagoPing. Haz clic en guardar y ¡listo!
                       </p>
                     </div>
                   </div>
@@ -366,7 +444,7 @@ export function CaptureChannelModal({
               <div className="flex items-start gap-2.5 p-3 rounded-xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/40 text-purple-900 dark:text-purple-200 text-xs">
                 <Volume2 className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
                 <p className="leading-relaxed text-[11px]">
-                  <strong>Tus colaboradores:</strong> Cuando un cliente te yapee, el sistema procesará el correo al segundo y enviará la alerta por voz y notificación Push a los teléfonos de tus cajeros.
+                  <strong>¿Cómo cantará los cobros?</strong> Cada vez que un cliente te yapee S/ 10 o más, PagoPing procesará el comprobante al segundo y cantará la alerta por voz en los celulares de tus cajeros y en tu panel web.
                 </p>
               </div>
             </div>
